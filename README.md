@@ -1,7 +1,7 @@
 # flaskLoginWebApp
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg?maxAge=2592000)](https://github.com/skondla/flaskLoginWebApp/blob/master/LICENSE)
 
-<<<<<<< HEAD
+
 The web interface (HTML) or CURL command can be used to request for
 1. Restoring a database instance from cluster and non-cluster database instances
 2. Checking the status of the restore from step 1.
