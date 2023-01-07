@@ -23,7 +23,7 @@ Request website credentials:
 
 1. Provide your email for web site sign up. 
 2. Sign up is only available to Admins through Admin console. 
->>>>>>> 82d4f8b5bddb0575a54fc95a70b675ca31e22aa6
+
 3. Apps with both Admin and User interfaces are running on dB API server(s) in a docker container mapped to different ports.
 4. The web site use authentication (currently stored in Postgresql dB) can be used in two forms
 5. The web site store user information for each action is performance on the web site. (user email, computer IP (real IP when available))
