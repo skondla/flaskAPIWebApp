@@ -160,12 +160,22 @@ rm -f cookies.txt
 ```
 Python Flask Web Interface:
 
-![Alt text](images/screen1.png)
+Sign Up page: 
 
-![Alt text](images/screen2.png)
+![Alt text](images/signup.png)
 
-![Alt text](images/screen3.png)
+Sign In page: 
 
-![Alt text](images/screen4.png)
+![Alt text](images/signin.png)
 
-![Alt text](images/screen5.png)
+RestoreDB page:
+
+![Alt text](images/restore.png)
+
+RestoreDB Status page:
+
+![Alt text](images/restore_status.png)
+
+AttachDB page:
+
+![Alt text](images/attachdb.png)
