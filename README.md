@@ -160,7 +160,7 @@ rm -f cookies.txt
 ```
 Python Flask Web Interface:
 
-![alt image](https://github.com/skondla/flaskAPIWebApp/tree/main/images/screen1.png)
+![alt text](https://github.com/skondla/flaskAPIWebApp/tree/main/images/screen1.png)
 
 ![alt text](https://github.com/skondla/flaskAPIWebApp/tree/main/images/screen2.png)
 
