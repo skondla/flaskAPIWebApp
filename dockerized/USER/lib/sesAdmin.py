@@ -117,7 +117,7 @@ def sendRawEmail(fileName,subject,content):
 	# Replace sender@example.com with your "From" address.
 	# This address must be verified with Amazon SES.
 	SENDER = "sudheer.kondla@gmail.com"
-	#SENDER = "skondla@clearleap.com"
+	#SENDER = "skondla@me.com"
 	# Replace recipient@example.com with a "To" address. If your account
 	# is still in the sandbox, this address must be verified.
 	RECIPIENT = toAddr
