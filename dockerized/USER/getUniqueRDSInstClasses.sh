@@ -11,7 +11,7 @@ rm -f rdsInstClasses.lst
 for engine in `cat getEngines.lst | awk '{print $1}'` 
 do
 
- /usr/local/bin/aws rds describe-orderable-db-instance-options --engine postgres --query OrderableDBInstanceOptions[*].DBInstanceClass \
+ /usr/local/bin/aws rds describe-orderable-db-instance-options --engine engine --query OrderableDBInstanceOptions[*].DBInstanceClass \
   --output text | sed -e 'y/\t/\n/' |  egrep -v '(db.r3|db.r4|db.m3|db.m4|24x|16x|12x)' |sort -rn|uniq >> rdsInstClasses.lst
   #--output text | sed -e 'y/\t/\n/' |  egrep -v '(db.r3|db.r4|db.t2|db.m3|db.m4|24x|16x|12x)' |sort -rn|uniq >> rdsInstClasses.lst
 done
