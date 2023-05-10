@@ -21,5 +21,8 @@ RUN chmod +x flaskDBRestoreUser.sh
 RUN chown -R app:app /app
 USER app
 EXPOSE 50443
+EXPOSE 20443
+EXPOSE 6432
+EXPOSE 5432
 ENTRYPOINT [ "/bin/bash" ]
 CMD [ "flaskDBRestoreUser.sh" ]

@@ -23,10 +23,20 @@ AWS_ACCESS_KEY_ID=`cat ~/.aws/credentials|grep aws_access_key_id | awk '{print $
 AWS_SECRET_ACCESS_KEY=`cat ~/.aws/credentials|grep aws_secret_access_key | awk '{print $3}'`
 REGION=`aws configure get region`
 
+#postgres 
+POSTGRES_HOST=`cat ~/.pgconfig | grep POSTGRES_HOST|awk '{print $2}'`
+POSTGRES_PORT=`cat ~/.pgconfig | grep POSTGRES_PORT|awk '{print $2}'`
+POSTGRES_USERNAME=`cat ~/.pgconfig | grep POSTGRES_USERNAME|awk '{print $2}'`
+POSTGRES_PASSWORD=`cat ~/.pgconfig | grep POSTGRES_PASSWORD|awk '{print $2}'`
+
 docker run \
  -e AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
  -e AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
  -e AWS_DEFAULT_REGION=eu-west-1  -d \
- -p 50443:50443 -p 5042:5042 \
+ -p 20443:50443 \
+ -e POSTGRES_HOST=${POSTGRES_HOST} \
+ -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} \
+ -e POSTGRES_USERNAME=${POSTGRES_USERNAME} \
+ -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} \
  --env-file ./env.sh \
  --name ${containerName} flaskauthuser

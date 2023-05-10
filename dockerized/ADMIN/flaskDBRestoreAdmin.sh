@@ -6,7 +6,7 @@ export FLASK_APP=${CURR_DIR}/__init__.py
 export FLASK_ENV=ADMIN
 export FLASK_DEBUG=1
 /usr/local/bin/flask run -h `hostname -i` -p 30443 --with-threads \
- --cert /app/certs/star_clearleap_com-expires-2021-07.crt \
- --key /app/certs/star_clearleap_com-expires-2021-07.key --debugger > flask_admin.log 
+ --cert /app/certs/certificate.pem \
+ --key /app/certs/key.pem --debugger > flask_admin.log 
 
  #--cert /etc/ssl/certs/star_clearleap_com-expires-2021-07.crt \

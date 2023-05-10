@@ -168,6 +168,14 @@ RestoreDB Status page:
 
 ![Alt text](images/restore_status.png)
 
-AttachDB page:
+AttachDB page1:
 
-![Alt text](images/attachdb.png)
+![Alt text](images/attachdb1.png)
+
+AttachDB page2:
+
+![Alt text](images/attachdb2.png)
+
+AttachDB DB Restore Options after successful login:
+
+![Alt text](images/db_restore_options_after_login.png)

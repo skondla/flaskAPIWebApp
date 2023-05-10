@@ -4,6 +4,7 @@ flask_bootstrap
 flask_login
 psycopg2-binary 
 python-dotenv
+psycopg2
 mod-wsgi-httpd
 Flask-HTTPAuth 
 boto3

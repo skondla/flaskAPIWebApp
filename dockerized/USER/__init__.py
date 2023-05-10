@@ -7,7 +7,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager 
-import utils, os
+#import utils, os
+import os
 
 # init SQLAlchemy so we can use it later in our models
 db = SQLAlchemy()
@@ -16,10 +17,12 @@ def create_app():
     app = Flask(__name__)
 
     app.config['SECRET_KEY'] = 's3dgMHEPR47DlmXNmb9hvHfj99U53beO'
-    pgpassword = utils.getPassword(os.environ['spassword'],os.environ['region'])
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://' + os.environ['suser'] + ':' + pgpassword + '@' + os.environ['shost'] + '/' + os.environ['sdatabase']     
+    #pgpassword = utils.getPassword(os.environ['spassword'],os.environ['region'])
+    #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://' + os.environ['suser'] + ':' + pgpassword + '@' + os.environ['shost'] + '/' + os.environ['sdatabase']     
 	
-  
+    #pgpassword = utils.getPassword(os.environ['spassword'],os.environ['region'])
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://' + os.environ['suser'] + ':' + os.environ['spassword'] \
+                                            + '@' + os.environ['shost'] + ':' + os.environ['sport'] + '/' + os.environ['sdatabase']
     db.init_app(app)
 
     login_manager = LoginManager()

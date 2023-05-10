@@ -1,5 +1,23 @@
 --Author: skondla@me.com
 --Purpose: Create schema for db restore web App.
+
+drop table if EXISTS public.user;
+drop table if EXISTS public.userinfo;
+drop sequence if EXISTS public.userinfo_id_seq ;
+drop sequence if EXISTS public.user_id_seq;
+
+DROP USER skondla;
+
+DROP DATABASE IF EXISTS flaskapp ;
+
+CREATE DATABASE flaskapp;
+
+CREATE USER skondla with password 'skondla_flaskapp_db_password';
+
+ALTER DATABASE flaskapp OWNER TO skondla;
+
+\connect flaskapp
+
 CREATE SEQUENCE public.user_id_seq
     START WITH 1
     INCREMENT BY 1
@@ -13,7 +31,7 @@ ALTER TABLE public.user_id_seq OWNER TO skondla;
 CREATE TABLE public."user" (
     id integer DEFAULT nextval('public.user_id_seq'::regclass) NOT NULL,
     email character varying(100),
-    password character varying(100),
+    password character varying(1000),
     name character varying(50)
 );
 
@@ -43,6 +61,10 @@ CREATE TABLE public.userinfo (
 
 
 ALTER TABLE public.userinfo OWNER TO skondla;
+ALTER TABLE public.user OWNER TO skondla;
+--ALTER SEQUENCE public.user_id_seq TO skondla;
+--ALTER SEQUENCE public.userinfo_id_seq TO skondla;
+
 
 SELECT pg_catalog.setval('public.user_id_seq', 33, true);
 SELECT pg_catalog.setval('public.userinfo_id_seq', 37, true);
