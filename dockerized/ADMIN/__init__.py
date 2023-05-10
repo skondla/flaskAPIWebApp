@@ -16,9 +16,6 @@ def create_app():
     #pgpassword = utils.getPassword(os.environ['spassword'],os.environ['region'])
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://' + os.environ['suser'] + ':' + os.environ['spassword'] \
                                             + '@' + os.environ['shost'] + ':' + os.environ['sport'] + '/' + os.environ['sdatabase']
-    #dbstring = 'postgresql://' + os.environ['suser'] + ':' + os.environ['spassword'] \
-    #                                        + '@' + os.environ['shost'] + ':' + os.environ['sport'] + '/' + os.environ['sdatabase']
-    #print("dbstring",dbstring)
     db.init_app(app)
 
     login_manager = LoginManager()
