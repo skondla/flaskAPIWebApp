@@ -1,3 +1,6 @@
+#!/bin/bash
+#Author: skondla@me.com , Date: 05/10/2023
+#Purpose: Create PostgreSQL database for Python Flask Web Applications
 export PGPASSFILE=~/.pgpass
 docker run -d -p 6432:5432 -e LANG=de_DE.utf8 -e POSTGRES_INITDB_ARGS="--locale-provider=icu --icu-locale=de-DE" -e POSTGRES_PASSWORD=mysecretpassword postgres:15-alpine 
 
