@@ -1,4 +1,6 @@
-__pycache__
-.git
-.pyc
+.output
 .DS_Store
+.pyc
+.git
+.vscode
+.log
