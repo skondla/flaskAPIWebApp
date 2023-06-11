@@ -39,7 +39,13 @@ jobs:
         service_account_key: ${{ secrets.GKE_SA_KEY }}
         project_id: ${{ secrets.GKE_PROJECT }}
         export_default_credentials: true 
-
+    # Test python code
+    - name: Test python code
+      working-directory: ${{env.APP_ADMIN_DIR}}
+      run: |
+        pip install -r requirements.txt
+        python -m pytest --cov=app --cov-report=xml --cov-report=html
+      
     # Build the Docker image and Scan it
     - name: Build, Scan and Push ADMIN UI app Docker image
       working-directory:  ${{ env.APP_ADMIN_DIR }}
@@ -51,13 +57,6 @@ jobs:
           .
         gcloud auth configure-docker ${{env.GKE_REGION}}-docker.pkg.dev --quiet
         docker push "${{env.GKE_REGION}}-docker.pkg.dev/${{env.GKE_PROJECT}}/${{env.GKE_PROJECT}}/${{env.GKE_APP_ADMIN_NAME}}:${{env.APP_VERSION}}"
-  #Scan Docker Image with Aqua Trivy  
-  Scan:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3 
     #Image scan with Aqua Trivy     
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
@@ -131,10 +130,10 @@ jobs:
     #Check application is running, test REST endpoints
     - name: Verify Coontainer Application
       run: |-
-        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}} | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/backup/status 
-        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}} | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/backup/create 
-        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}} | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/backup/delete
-    
+        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}} | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/signup 
+        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}} | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/login 
+        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}} | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/logout
+
     #Notify Slack
     - name: Notify Slack
       uses: ravsamhq/notify-slack-action@v2
