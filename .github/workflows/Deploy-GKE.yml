@@ -44,7 +44,7 @@ jobs:
       working-directory: ${{env.APP_ADMIN_DIR}}
       run: |
         pip install -r requirements.txt
-        python -m pytest --cov=app --cov-report=xml --cov-report=html
+        python -m pytest --cov=main --cov-report=xml --cov-report=html
       
     # Build the Docker image and Scan it
     - name: Build, Scan and Push ADMIN UI app Docker image
