@@ -1,4 +1,4 @@
-FROM python:3.7.4
+FROM python:3.9.13
 LABEL maintainer="Sudheer Kondla, skondla@me.com"
 #RUN apt-get -y install python3-pip
 RUN mkdir /app
