@@ -1,14 +1,16 @@
 #!/bin/bash
 
-# Set parameters
-export GKE_PROJECT="igneous-spanner-385916"
-export GKE_CLUSTER="webapp1-demo-cluster"
-export GKE_APP_NAME="webapp1-demo-shop"
-export GKE_SERVICE="webapp1-service"
-export GKE_SERVICE_ACCOUNT="webapp1-serviceaccount"
-export GKE_DEPLOYMENT_NAME="webapp1-deployment"
-export GKE_REGION="us-east4"
-export GKE_ZONE="us-east4-a"
+source ~/.bash_profile
+export GKE_PROJECT=${GCP_PROJECT_ID} #env variable from  ~/.secrets
+export GKE_CLUSTER="flaskapp1-demo-cluster"
+export GKE_APP_ADMIN_NAME="flaskapp1-admin-ui"
+export GKE_SERVICE="flaskapp1-service"
+export GKE_SERVICE_ACCOUNT="flaskapp1-serviceaccount"
+export GKE_DEPLOYMENT_NAME="flaskapp1-deployment"
+export MANIFESTS_DIR="deploy/manifests/flaskapp1"
+export APP_ADMIN_DIR="../../../dockerized/ADMIN"
+export GKE_NAMESPACE="flaskapp1-namespace"
+export GKE_APP_PORT=30443
 
 gcloud config set project $GKE_PROJECT
 

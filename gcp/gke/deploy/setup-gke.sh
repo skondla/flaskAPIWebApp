@@ -6,16 +6,18 @@
 # See https://console.cloud.google.com/projectselector2/home/dashboard
 
 # Set parameters
+source ~/.bash_profile
 export GKE_PROJECT=${GCP_PROJECT_ID} #env variable from  ~/.secrets
-export GKE_CLUSTER="webapp1-demo-cluster"
-export GKE_APP_NAME="webapp1-demo-shop"
-export GKE_SERVICE="webapp1-service"
-export GKE_SERVICE_ACCOUNT="webapp1-serviceaccount"
-export GKE_DEPLOYMENT_NAME="webapp1-deployment"
-export MANIFESTS_DIR="deploy/manifests/webapp"
-export APP_DIR="../../app1/"
-export GKE_NAMESPACE="webapp1-namespace"
-export GKE_APP_PORT="25443"
+export GKE_CLUSTER="flaskapp1-demo-cluster"
+export GKE_APP_ADMIN_NAME="flaskapp1-admin-ui"
+export GKE_SERVICE="flaskapp1-service"
+export GKE_SERVICE_ACCOUNT="flaskapp1-serviceaccount"
+export GKE_DEPLOYMENT_NAME="flaskapp1-deployment"
+export MANIFESTS_DIR="deploy/manifests/flaskapp1"
+export APP_ADMIN_DIR="../../../dockerized/ADMIN"
+export GKE_NAMESPACE="flaskapp1-namespace"
+export GKE_APP_PORT=30443
+
 
 # Get a list of regions:
 # $ gcloud compute regions list
@@ -28,7 +30,7 @@ export GKE_ADDITIONAL_ZONE="us-east4-b"
 
 
 # Just a placeholder for the first deployment
-export GITHUB_SHA="webapp1-demo-shop"
+export GITHUB_SHA=${GKE_APP_ADMIN_NAME}
 
 #Login to gcloud
 gcloud auth login
@@ -103,14 +105,15 @@ gcloud projects add-iam-policy-binding $GKE_PROJECT \
   --role=roles/artifactregistry.admin
 
 # Download JSON
-gcloud iam service-accounts keys create ~/.private/key.json --iam-account=$GKE_SVC_MAIL
+gcloud iam service-accounts keys create ~/.private/flaskapp_key.json --iam-account=$GKE_SVC_MAIL
 
 # Build and push the docker image
 docker build --tag \
-  "$GKE_REGION-docker.pkg.dev/$GKE_PROJECT/$GKE_PROJECT/$GKE_APP_NAME:$GITHUB_SHA" \
+  "$GKE_REGION-docker.pkg.dev/$GKE_PROJECT/$GKE_APP_ADMIN_NAME:$GITHUB_SHA" \
   ${APP_DIR}/
 gcloud auth configure-docker $GKE_REGION-docker.pkg.dev --quiet
-docker push "$GKE_REGION-docker.pkg.dev/$GKE_PROJECT/$GKE_PROJECT/$GKE_APP_NAME:$GITHUB_SHA"
+gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://$GKE_REGION-docker.pkg.dev
+docker push "$GKE_REGION-docker.pkg.dev/$GKE_PROJECT/$GKE_APP_ADMIN_NAME:$GITHUB_SHA"
 
 #Check envsubst is configured correctly (this example is on MacOS only)
 which gettext
@@ -143,9 +146,9 @@ envsubst < ${MANIFESTS_DIR}/Deployment.yaml | kubectl apply -f -
 envsubst < ${MANIFESTS_DIR}/Service.yaml | kubectl apply -f -
 
 #Check application is running, test application REST endpioints
-curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE | awk '{print $4}'`:$GKE_APP_PORT/backup/status
-curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE | awk '{print $4}'`:$GKE_APP_PORT/backup/create
-curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE | awk '{print $4}'`:$GKE_APP_PORT/backup/delete
+curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE | awk '{print $4}'`:$GKE_APP_PORT/signup
+curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE | awk '{print $4}'`:$GKE_APP_PORT/login
+curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE | awk '{print $4}'`:$GKE_APP_PORT/logout
 
 kubectl get service
 echo ""
@@ -155,5 +158,5 @@ echo ""
 echo ""
 echo "Please create a secret named 'GKE_SA_KEY' in GitHub with the followign content:"
 echo ""
-cat ~/.private/key.json | base64
+cat ~/.private/flaskapp_key.json | base64
 echo ""
