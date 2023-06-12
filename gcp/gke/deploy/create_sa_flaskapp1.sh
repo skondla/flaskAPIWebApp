@@ -9,7 +9,7 @@
 source ~/.bash_profile
 export GKE_PROJECT=${GCP_PROJECT_ID} #env variable from  ~/.secrets
 export GKE_CLUSTER="webapp1-demo-cluster"
-export AGKE_APP_ADMIN_NAME="flaskapp1-demo-shop"
+export GKE_APP_ADMIN_NAME="flaskapp1-admin-ui"
 export GKE_SERVICE="flaskapp1-service"
 export GKE_SERVICE_ACCOUNT="flaskapp1-serviceaccount"
 export GKE_DEPLOYMENT_NAME="flaskapp1-deployment"
@@ -80,7 +80,14 @@ gcloud projects add-iam-policy-binding $GKE_PROJECT \
   --role=roles/artifactregistry.admin
 
 # Download JSON
-gcloud iam service-accounts keys create ~/.private/flaskapp_key.json --iam-account=$GKE_SVC_MAIL
+#gcloud iam service-accounts keys create ~/.private/flaskapp_key.json --iam-account=$GKE_SVC_MAIL
+
+# Build and push the docker image
+docker build --tag \
+  "$GKE_REGION-docker.pkg.dev/$GKE_PROJECT/$GKE_PROJECT/$GKE_APP_ADMIN_NAME:$GITHUB_SHA" \
+  ${APP_ADMIN_DIR}/
+gcloud auth configure-docker $GKE_REGION-docker.pkg.dev --quiet
+docker push "$GKE_REGION-docker.pkg.dev/$GKE_PROJECT/$GKE_PROJECT/$GKE_APP_ADMIN_NAME:$GITHUB_SHA"
 
 # Build and push the docker image via git actions
 

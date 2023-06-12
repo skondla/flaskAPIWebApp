@@ -25,6 +25,7 @@ env:
   APP_ADMIN_DIR: dockerized/ADMIN
   APP_USER_DIR: dockerized/USER
   GKE_APP_ADMIN_PORT: 30443
+  GITHUB_SHA: ${{ github.sha }}
 jobs:
   Build:
     runs-on: ubuntu-latest
