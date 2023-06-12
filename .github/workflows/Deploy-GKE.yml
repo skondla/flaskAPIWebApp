@@ -93,8 +93,8 @@ jobs:
           --build-arg GITHUB_REF="$GITHUB_REF" \
           .
         gcloud auth configure-docker ${{env.GKE_REGION}}-docker.pkg.dev --quiet
-        gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://${{env.GKE_REGION}}-docker.pkg.dev
         docker push "${{env.GKE_REGION}}-docker.pkg.dev/${{env.GKE_PROJECT}}/${{env.GKE_PROJECT}}:${{env.APP_VERSION}}"
+      #  gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://${{env.GKE_REGION}}-docker.pkg.dev
     #Image scan with Aqua Trivy  
   Scan:
     needs: [ImageBuild]
