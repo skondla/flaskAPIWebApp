@@ -7,12 +7,12 @@ on:
 
 env:
   GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
-  GKE_CLUSTER: webapp1-demo-cluster
+  GKE_CLUSTER: flaskapp1-demo-cluster
   GKE_APP_ADMIN_NAME: flaskapp1-admin-ui
   GKE_APP_USER_NAME: flaskapp1-user-ui
   GKE_SERVICE: flaskapp1-service
   GKE_SERVICE_ACCOUNT: flaskapp1-serviceaccount
-  GKE_NAMESPACE: webapp1-namespace
+  GKE_NAMESPACE: flaskapp1-namespace
   GKE_DEPLOYMENT_NAME: flaskapp1-deployment
   GKE_REGION: us-east4
   GKE_ZONE: us-east4-a
