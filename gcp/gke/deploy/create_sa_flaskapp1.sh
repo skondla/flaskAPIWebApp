@@ -6,6 +6,7 @@
 # See https://console.cloud.google.com/projectselector2/home/dashboard
 
 # Set parameters
+source ~/.bash_profile
 export GKE_PROJECT=${GCP_PROJECT_ID} #env variable from  ~/.secrets
 export GKE_CLUSTER="webapp1-demo-cluster"
 export AGKE_APP_ADMIN_NAME="flaskapp1-demo-shop"
@@ -71,6 +72,7 @@ export GKE_SVC_MAIL="$GKE_SERVICE_ACCOUNT@$GKE_PROJECT.iam.gserviceaccount.com"
 gcloud projects add-iam-policy-binding $GKE_PROJECT \
   --member=serviceAccount:$GKE_SVC_MAIL \
   --role=roles/container.clusterAdmin 
+
 
 # Add 'artifactregistry.admin' role:
 gcloud projects add-iam-policy-binding $GKE_PROJECT \
