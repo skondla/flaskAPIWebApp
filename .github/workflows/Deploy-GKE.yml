@@ -182,24 +182,14 @@ jobs:
     #   curl https://raw.githubusercontent.com/linkerd/linkerd-examples/master/thanos-demo/linkerd-install-gke.yaml  | kubectl apply -f -
     #   envsubst <  ../../serviceMesh/linkerd-install-gke.yaml | kubectl apply -f - 
     #   bash serviceMesh/setup_linkerd.sh
-  #Verify application is running, test REST endpoints
-  Verify:
-    needs: [Deploy]
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+    #Check application is running, test REST endpoints
     - name: Verify Coontainer Application
       run: |-
         curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}} | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/signup 
         curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}} | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/login 
         curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}} | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/logout
-  #Notify Slack 
-  Notify:
-    needs: [Verify]
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
+
+    #Notify Slack
     - name: Notify Slack
       uses: ravsamhq/notify-slack-action@v2
       if: always()
