@@ -140,6 +140,8 @@ else
   echo "${check}"
 fi
 ##########
+#Create namespace and service account
+envsubst < ${MANIFESTS_DIR}/flaskapp1.yaml | kubectl apply -f -
 # Create deployment
 envsubst < ${MANIFESTS_DIR}/Deployment.yaml | kubectl apply -f -
 
