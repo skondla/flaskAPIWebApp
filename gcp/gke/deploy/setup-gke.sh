@@ -109,11 +109,12 @@ gcloud iam service-accounts keys create ~/.private/flaskapp_key.json --iam-accou
 
 # Build and push the docker image
 docker build --tag \
-  "$GKE_REGION-docker.pkg.dev/$GKE_PROJECT/$GKE_APP_ADMIN_NAME:$GITHUB_SHA" \
+  "$GKE_REGION-docker.pkg.dev/$GKE_PROJECT/$GKE_PROJECT/$GKE_APP_ADMIN_NAME:$GITHUB_SHA" \
   ${APP_DIR}/
 gcloud auth configure-docker $GKE_REGION-docker.pkg.dev --quiet
 gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://$GKE_REGION-docker.pkg.dev
-docker push "$GKE_REGION-docker.pkg.dev/$GKE_PROJECT/$GKE_APP_ADMIN_NAME:$GITHUB_SHA"
+docker push "$GKE_REGION-docker.pkg.dev/$GKE_PROJECT/$GKE_PROJECT/$GKE_APP_ADMIN_NAME:$GITHUB_SHA"
+
 
 #Check envsubst is configured correctly (this example is on MacOS only)
 which gettext
