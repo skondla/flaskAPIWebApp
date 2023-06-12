@@ -40,21 +40,21 @@ jobs:
         project_id: ${{ secrets.GKE_PROJECT }}
         export_default_credentials: true 
 
-  # Test:
-  #   needs: [Build]
-  #   runs-on: ubuntu-latest
-  #   strategy:
-  #     matrix: 
-  #       os: [ubuntu-latest, macos-latest, windows-latest]
-  #       python-version: [3.7.4, 3.9.13]
-  #       steps:
-  #       - uses: actions/checkout@v2
-  #       - name: Set up Python ${{ matrix.python-version }}
-  #         uses: actions/setup-python@v2
-  #         with:
-  #           python-version:  ${{ matrix.python-version }}
-  #       - name: Display Python version
-  #         run: python -c "import sys; print(sys.version)"
+  Test:
+    needs: [Build]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: 
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python-version: [3.7.4, 3.9.13]
+        steps:
+        - uses: actions/checkout@v2
+        - name: Set up Python ${{ matrix.python-version }}
+          uses: actions/setup-python@v2
+          with:
+            python-version:  ${{ matrix.python-version }}
+        - name: Display Python version
+          run: python -c "import sys; print(sys.version)"
   #       - name: Install dependencies
   #         working-directory:  ${{ env.APP_ADMIN_DIR }}
   #         run: |
@@ -70,7 +70,7 @@ jobs:
                     
     # Build the Docker image and Scan it
   ImageBuild:
-    needs: [Build] 
+    needs: [Test] 
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -117,10 +117,9 @@ jobs:
     #  with:
     #    sarif_file: 'trivy-results.sarif'  
   Deploy:
+    needs: [Scan]
     runs-on: ubuntu-latest
     environment: production
-    needs: Scan
-
     steps:
     - name: Checkout
       uses: actions/checkout@v3
