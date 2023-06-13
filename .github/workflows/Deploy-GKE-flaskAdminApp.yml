@@ -180,16 +180,16 @@ jobs:
         envsubst < Deployment_admin_ui.yaml | kubectl apply -f -
         kubectl get pods -o wide
         kubectl get svc -o wide 
-        sleep 60
+        sleep 90
     #   curl https://raw.githubusercontent.com/linkerd/linkerd-examples/master/thanos-demo/linkerd-install-gke.yaml  | kubectl apply -f -
     #   envsubst <  ../../serviceMesh/linkerd-install-gke.yaml | kubectl apply -f - 
     #   bash serviceMesh/setup_linkerd.sh
     #Check application is running, test REST endpoints
     - name: Verify Coontainer Application
       run: |-
-        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}} | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/signup 
-        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}} | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/login 
-        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}} | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/logout
+        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}}-admin | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/signup 
+        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}}-admin | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/login 
+        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}}-admin | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/logout
 
     #Notify Slack
     - name: Notify Slack
