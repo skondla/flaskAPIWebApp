@@ -1,5 +1,7 @@
-name: DevSecOps CI/CD Pipeline Deploy-GKE
-
+name: DevSecOps CI/CD Pipeline Deploy-GKE Flask User App
+#Pre-requisites: 
+  #Before running this pipeline, you need to create a GKE cluster and a GKE service account with the following roles:
+  #Create postgresql database flaskapp  "kubectl apply -f gcp/gke/deploy/manifests/postgres/sample1/"
 #on: [workflow_dispatch]
 on:
   push:
@@ -25,6 +27,7 @@ env:
   APP_ADMIN_DIR: dockerized/ADMIN
   APP_USER_DIR: dockerized/USER
   GKE_APP_ADMIN_PORT: 30443
+  GKE_APP_USER_PORT: 50443
   GITHUB_SHA: ${{ github.sha }}
 jobs:
   Checkout:
@@ -46,7 +49,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Test Application
-        working-directory:  ${{ env.APP_ADMIN_DIR }}
+        working-directory:  ${{ env.APP_USER_DIR }}
         run: |-  
           echo "Testing Application, Not complete yet"
 
@@ -66,7 +69,7 @@ jobs:
   #       - name: Display Python version
   #         run: python -c "import sys; print(sys.version)"
   #       - name: Install dependencies
-  #         working-directory:  ${{ env.APP_ADMIN_DIR }}
+  #         working-directory:  ${{ env.APP_USER_DIR }}
   #         run: |
   #           python -m pip install --upgrade pip
   #           pip install pytest
@@ -95,15 +98,15 @@ jobs:
         credentials: ${{ secrets.GKE_SA_KEY }} 
     - uses: actions/checkout@v3
     - name: Build, Scan and Push ADMIN UI app Docker image
-      working-directory:  ${{ env.APP_ADMIN_DIR }}
+      working-directory:  ${{ env.APP_USER_DIR }}
       run: |-  
         docker build \
-          --tag "${{env.GKE_REGION}}-docker.pkg.dev/${{env.GKE_PROJECT}}/${{env.GKE_PROJECT}}/${{env.GKE_APP_ADMIN_NAME}}:${{env.APP_VERSION}}" \
+          --tag "${{env.GKE_REGION}}-docker.pkg.dev/${{env.GKE_PROJECT}}/${{env.GKE_PROJECT}}/${{env.GKE_APP_USER_NAME}}:${{env.APP_VERSION}}" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg GITHUB_REF="$GITHUB_REF" \
           .
         gcloud auth configure-docker ${{env.GKE_REGION}}-docker.pkg.dev --quiet
-        docker push "${{env.GKE_REGION}}-docker.pkg.dev/${{env.GKE_PROJECT}}/${{env.GKE_PROJECT}}/${{env.GKE_APP_ADMIN_NAME}}:${{env.APP_VERSION}}"
+        docker push "${{env.GKE_REGION}}-docker.pkg.dev/${{env.GKE_PROJECT}}/${{env.GKE_PROJECT}}/${{env.GKE_APP_USER_NAME}}:${{env.APP_VERSION}}"
       #  gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://${{env.GKE_REGION}}-docker.pkg.dev
     #Image scan with Aqua Trivy  
   Scan:
@@ -123,7 +126,7 @@ jobs:
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
-        image-ref: '${{env.GKE_REGION}}-docker.pkg.dev/${{env.GKE_PROJECT}}/${{env.GKE_PROJECT}}/${{env.GKE_APP_ADMIN_NAME}}:${{env.APP_VERSION}}'
+        image-ref: '${{env.GKE_REGION}}-docker.pkg.dev/${{env.GKE_PROJECT}}/${{env.GKE_PROJECT}}/${{env.GKE_APP_USER_NAME}}:${{env.APP_VERSION}}'
         format: 'table'
         #exit-code: '1' #By pass and continue if vulnerabilities found (Not recommended, testing complete devSecOps pipeline)
         ignore-unfixed: true
@@ -174,8 +177,8 @@ jobs:
       working-directory: ${{env.MANIFESTS_DIR}}
       run: |-
         envsubst < flaskapp1.yaml | kubectl apply -f -
-        envsubst < Service_admin_ui.yaml | kubectl apply -f -
-        envsubst < Deployment_admin_ui.yaml | kubectl apply -f -
+        envsubst < Service_user_ui.yaml | kubectl apply -f -
+        envsubst < Deployment_user_ui.yaml | kubectl apply -f -
         kubectl get pods -o wide
         kubectl get svc -o wide 
         sleep 60
@@ -185,9 +188,10 @@ jobs:
     #Check application is running, test REST endpoints
     - name: Verify Coontainer Application
       run: |-
-        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}} | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/signup 
-        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}} | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/login 
-        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}} | awk '{print $4}'`:${{env.GKE_APP_ADMIN_PORT}}/logout
+        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}}-user | awk '{print $4}'`:${{env.GKE_APP_USER_PORT}}/login 
+        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}}-user | awk '{print $4}'`:${{env.GKE_APP_USER_PORT}}/restore 
+        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}}-user | awk '{print $4}'`:${{env.GKE_APP_USER_PORT}}/status
+        curl -Lk https://`kubectl get svc -n ${{env.GKE_NAMESPACE}} | grep ${{env.GKE_SERVICE}}-user | awk '{print $4}'`:${{env.GKE_APP_USER_PORT}}/attachdb
 
     #Notify Slack
     - name: Notify Slack
