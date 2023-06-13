@@ -180,7 +180,7 @@ jobs:
         envsubst < Deployment_admin_ui.yaml | kubectl apply -f -
         kubectl get pods -o wide
         kubectl get svc -o wide 
-        sleep 90
+        sleep 120
     #   curl https://raw.githubusercontent.com/linkerd/linkerd-examples/master/thanos-demo/linkerd-install-gke.yaml  | kubectl apply -f -
     #   envsubst <  ../../serviceMesh/linkerd-install-gke.yaml | kubectl apply -f - 
     #   bash serviceMesh/setup_linkerd.sh
