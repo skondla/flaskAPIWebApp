@@ -5,7 +5,7 @@ name: DevSecOps CI/CD Pipeline Deploy-GKE Flask User App
 #on: [workflow_dispatch]
 on:
   push:
-    branches: [ "testing_on_gcp", "master"]
+    branches: [ "testing_on_gcp", "main"]
 
 env:
   GKE_PROJECT: ${{ secrets.GKE_PROJECT }}
