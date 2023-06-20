@@ -15,6 +15,7 @@ env:
   EKS_SERVICE: flaskapp1
   EKS_SERVICE_ACCOUNT: flaskapp-sa1
   EKS_NAMESPACE: flaskapp
+  EKS_APP_USER_NAME: "flaskapp1-user"
   EKS_DEPLOYMENT_NAME: flaskapp1-user
   APP_DIR: dockerized/USER
   MANIFESTS_DIR: aws/eks/deploy/manifest/flaskapp1
@@ -22,7 +23,7 @@ env:
   AWS_APP_USER_PORT: 50443
   GITHUB_SHA: ${{ github.sha }}
   IMAGE_NAME: ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/flaskapp1-demo-shop:${{github.sha}}-user
-  
+  FLASK_USER_IMAGE_NAME: ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/flaskapp1-demo-shop:${{github.sha}}-user
 jobs:
   Build:
     runs-on: ubuntu-latest
