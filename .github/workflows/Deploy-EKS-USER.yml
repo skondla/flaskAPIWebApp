@@ -1,4 +1,4 @@
-name: Deploy Flaskapp to EKS Cluster
+name: Deploy Flaskapp USER to EKS Cluster
 
 #on: [ workflow_dispatch ] 
 on:
