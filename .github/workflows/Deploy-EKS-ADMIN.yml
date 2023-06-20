@@ -93,7 +93,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-          FLASK_ADMIN_IMAGE_NAME: ${{env.FLASK_ADMIN_IMAGE_NAME}}
+          IMAGE_NAME: ${{env.FLASK_ADMIN_IMAGE_NAME}}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -123,9 +123,9 @@ jobs:
       - name: Verify Coontainer Application
         run: |-
           kubectl rollout status deploy ${{env.EKS_APP_NAME}} -n ${{env.EKS_NAMESPACE}}
-          curl -Lk https://`kubectl get svc -n ${{env.EKS_NAMESPACE}} | grep ${{env.EKS_SERVICE}} | awk '{print $4}'`:${{env.AWS_APP_ADMIN_PORT}}/signup
-          curl -Lk https://`kubectl get svc -n ${{env.EKS_NAMESPACE}} | grep ${{env.EKS_SERVICE}} | awk '{print $4}'`:${{env.AWS_APP_ADMIN_PORT}}/login
-          curl -Lk https://`kubectl get svc -n ${{env.EKS_NAMESPACE}} | grep ${{env.EKS_SERVICE}} | awk '{print $4}'`:${{env.AWS_APP_ADMIN_PORT}}/logout
+          curl -Lk https://`kubectl get svc -n ${{env.EKS_NAMESPACE}} | grep ${{env.EKS_APP_ADMIN_NAME}} | awk '{print $4}'`:${{env.AWS_APP_ADMIN_PORT}}/signup
+          curl -Lk https://`kubectl get svc -n ${{env.EKS_NAMESPACE}} | grep ${{env.EKS_APP_ADMIN_NAME}} | awk '{print $4}'`:${{env.AWS_APP_ADMIN_PORT}}/login
+          curl -Lk https://`kubectl get svc -n ${{env.EKS_NAMESPACE}} | grep ${{env.EKS_APP_ADMIN_NAME}} | awk '{print $4}'`:${{env.AWS_APP_ADMIN_PORT}}/logout
 
       #Notify Slack
       - name: Notify Slack
