@@ -1,4 +1,4 @@
-name: DevSecOps CI/CD Pipeline Deploy-GKE Flask Admin App
+name: Deploy Flaskapp ADMIN to GKE Cluster
 #Pre-requisites: 
   #Before running this pipeline, you need to create a GKE cluster and a GKE service account with the following roles:
   #Create postgresql database flaskapp  "kubectl apply -f gcp/gke/deploy/manifests/postgres/sample1/"

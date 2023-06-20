@@ -1,27 +1,28 @@
-name: Deploy Flaskapp to EKS Cluster
+name: Deploy Flaskapp ADMIN to EKS Cluster
 
 #on: [ workflow_dispatch ] 
 on:
   push:
-    branches: [ "testing_aws", "main" ]
+    branches: [ "testing_on_aws", "main" ]
 
 env:
   AWS_REGION: ${{secrets.AWS_REGION}}
   ECR_REPOSITORY: flaskapp1-demo-shop
-  ECR_REGISTRY: ${secrets.AWS_ACCOUNT_ID}.dkr.ecr.${secrets.AWS_REGION}.amazonaws.com"
+  ECR_REGISTRY: ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com"
   EKS_CLUSTER_NAME: webapps-demo
   CONTAINER_NAME: flaskapp1-admin
   EKS_APP_NAME: flaskapp1-admin
   EKS_SERVICE: flaskapp1
   EKS_SERVICE_ACCOUNT: flaskapp-sa1
   EKS_NAMESPACE: flaskapp
+  EKS_APP_ADMIN_NAME: "flaskapp1-admin"
   EKS_DEPLOYMENT_NAME: flaskapp1-admin
   APP_DIR: dockerized/ADMIN
   MANIFESTS_DIR: aws/eks/deploy/manifest/flaskapp1
   AWS_ACCOUNT_ID: ${{secrets.AWS_ACCOUNT_ID}}
   AWS_APP_ADMIN_PORT: 30443
   GITHUB_SHA: ${{ github.sha }}
-  IMAGE_NAME: ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/flaskapp1-demo-shop:${{github.sha}}-admin
+  FLASK_ADMIN_IMAGE_NAME: ${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/flaskapp1-demo-shop:${{github.sha}}-admin
   
 jobs:
   Build:
@@ -52,7 +53,7 @@ jobs:
           IMAGE_TAG: ${{ env.GITHUB_SHA }}
         working-directory: ${{env.APP_DIR}}
         run: |
-          imagename=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          imagename=${{env.FLASK_ADMIN_IMAGE_NAME}}
           echo "Build and push $imagename"
           docker build -t $imagename .
           docker push $imagename
@@ -72,7 +73,7 @@ jobs:
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: '${{secrets.AWS_ACCOUNT_ID}}.dkr.ecr.${{secrets.AWS_REGION}}.amazonaws.com/flaskapp1-demo-shop:${{github.sha}}'
+          image-ref: '${{env.FLASK_ADMIN_IMAGE_NAME}}'
           format: 'table'
           #exit-code: '1' #By pass and continue if vulnerabilities found (Not recommended, testing complete devSecOps pipeline)
           ignore-unfixed: true
@@ -92,7 +93,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-          IMAGE_NAME: ${{env.ECR_REGISTRY}}/${{env.ECR_REPOSITORY}}:${{env.GITHUB_SHA}}
+          IMAGE_NAME: ${{env.FLASK_ADMIN_IMAGE_NAME}}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -122,9 +123,9 @@ jobs:
       - name: Verify Coontainer Application
         run: |-
           kubectl rollout status deploy ${{env.EKS_APP_NAME}} -n ${{env.EKS_NAMESPACE}}
-          curl -Lk https://`kubectl get svc -n ${{env.EKS_NAMESPACE}} | grep ${{env.EKS_SERVICE}} | awk '{print $4}'`:${{env.AWS_APP_ADMIN_PORT}}/signup
-          curl -Lk https://`kubectl get svc -n ${{env.EKS_NAMESPACE}} | grep ${{env.EKS_SERVICE}} | awk '{print $4}'`:${{env.AWS_APP_ADMIN_PORT}}/login
-          curl -Lk https://`kubectl get svc -n ${{env.EKS_NAMESPACE}} | grep ${{env.EKS_SERVICE}} | awk '{print $4}'`:${{env.AWS_APP_ADMIN_PORT}}/logout
+          curl -Lk https://`kubectl get svc -n ${{env.EKS_NAMESPACE}} | grep ${{env.EKS_APP_ADMIN_NAME}} | awk '{print $4}'`:${{env.AWS_APP_ADMIN_PORT}}/signup
+          curl -Lk https://`kubectl get svc -n ${{env.EKS_NAMESPACE}} | grep ${{env.EKS_APP_ADMIN_NAME}} | awk '{print $4}'`:${{env.AWS_APP_ADMIN_PORT}}/login
+          curl -Lk https://`kubectl get svc -n ${{env.EKS_NAMESPACE}} | grep ${{env.EKS_APP_ADMIN_NAME}} | awk '{print $4}'`:${{env.AWS_APP_ADMIN_PORT}}/logout
 
       #Notify Slack
       - name: Notify Slack
