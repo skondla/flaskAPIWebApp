@@ -183,3 +183,12 @@ AttachDB page2:
 AttachDB DB Restore Options after successful login:
 
 ![Alt text](images/db_restore_options_after_login.png)
+
+#### DevSecOps pipeline diagram
+
+![Alt text](images/DevSecOps_with_GutHub_Actions_EKS.png)
+
+###### Contact: skondla.ai@gmail.com
+###### Blog
+
+[DevSecOps — Deploying WebApp on Google Cloud EKS cluster with Github Actions](https://medium.com/@kondlawork/devsecops-deploying-webapp-on-aws-eks-cluster-with-github-actions-da8865a1b27)

@@ -12,11 +12,13 @@ DROP DATABASE IF EXISTS flaskapp ;
 
 CREATE DATABASE flaskapp;
 
-CREATE USER skondla with password 'skondla_flaskapp_db_password';
+--SET SKONDLA_PG_PASS TO current_setting('SKONDLA_PG_PASS');
+
+CREATE USER skondla with password :SKONDLA_PG_PASS;
 
 ALTER DATABASE flaskapp OWNER TO skondla;
 
-\connect flaskapp
+\connect flaskapp 
 
 CREATE SEQUENCE public.user_id_seq
     START WITH 1
@@ -69,7 +71,9 @@ ALTER TABLE public.user OWNER TO skondla;
 SELECT pg_catalog.setval('public.user_id_seq', 33, true);
 SELECT pg_catalog.setval('public.userinfo_id_seq', 37, true);
 
+/*
 REVOKE ALL ON SCHEMA public FROM rdsadmin;
 REVOKE ALL ON SCHEMA public FROM PUBLIC;
 GRANT ALL ON SCHEMA public TO dbadmin;
 GRANT ALL ON SCHEMA public TO PUBLIC;
+*/

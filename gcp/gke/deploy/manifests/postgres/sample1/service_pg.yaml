@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: example-postgres
+  name: postgres11
   namespace: flaskapp1-namespace
   labels:
-    app: example-app
+    app: flaskapi
 spec:
   ports:
     - port: 5432
   type: LoadBalancer
   selector:
-    app: example-app
+    app: flaskapi
