@@ -4,7 +4,7 @@ metadata:
   name: pg-pvc-claim
   namespace: flaskapp1-namespace
   labels:
-    app: example-app
+    app: flaskapi
 spec:
   storageClassName: manual
   accessModes:

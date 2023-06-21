@@ -1,12 +1,12 @@
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: postgres11
   namespace: flaskapp1-namespace
   labels:
     app: flaskapi
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: flaskapi

@@ -1,19 +1,19 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
-  name: example-postgres
+  name: postgres11
   namespace: flaskapp1-namespace
   labels:
-    app: example-app
+    app: flaskapi
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: example-app
+      app: flaskapi
   template:
     metadata:
       labels:
-        app: example-app
+        app: flaskapi
     spec:
       containers:
         - image: postgres:11
@@ -27,8 +27,8 @@ spec:
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: example-postgres-secrets
-                  key: root_password
+                  name:  pg11-secrets
+                  key: pg_root
             - name: PGDATA
               value: /var/lib/postgresql/data/pgdata
           ports:

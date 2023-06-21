@@ -12,7 +12,7 @@ DROP DATABASE IF EXISTS flaskapp ;
 
 CREATE DATABASE flaskapp;
 
-CREATE USER skondla with password 'skondla_flaskapp_db_password';
+CREATE USER skondla with password 'somepasswordissecret';
 
 ALTER DATABASE flaskapp OWNER TO skondla;
 
