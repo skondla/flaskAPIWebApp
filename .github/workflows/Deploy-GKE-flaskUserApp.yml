@@ -221,7 +221,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: 'owasp/zap2docker-stable'
-          target: "https://20.124.47.56:25443/backup/status"
+          target: "https://34.145.189.1:${{env.GKE_APP_USER_PORT}}/login"
           # target: ${{env.CREATE_EP}}
           rules_file_name: '.zap/rules.tsv'
           cmd_options: '-a'   
