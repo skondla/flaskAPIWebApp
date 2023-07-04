@@ -10,11 +10,14 @@ source ~/.bash_profile
 export GKE_PROJECT=${GCP_PROJECT_ID} #env variable from  ~/.secrets
 export GKE_CLUSTER="flaskapp1-demo-cluster"
 export GKE_APP_ADMIN_NAME="flaskapp1-admin-ui"
+export GKE_APP_USER_NAME="flaskapp1-user-ui"
 export GKE_SERVICE="flaskapp1-service"
 export GKE_SERVICE_ACCOUNT="flaskapp1-serviceaccount"
 export GKE_DEPLOYMENT_NAME="flaskapp1-deployment"
-export MANIFESTS_DIR="deploy/manifests/flaskapp1"
+export APP_MANIFESTS_DIR="manifests/flaskapp1"
+export DB_MANIFESTS_DIR="manifests/postgres/sample2"
 export APP_ADMIN_DIR="../../../dockerized/ADMIN"
+export APP_USER_DIR="../../../dockerized/USER"
 export GKE_NAMESPACE="flaskapp1-namespace"
 export GKE_APP_PORT=30443
 
@@ -30,7 +33,8 @@ export GKE_ADDITIONAL_ZONE="us-east4-b"
 
 
 # Just a placeholder for the first deployment
-export GITHUB_SHA=${GKE_APP_ADMIN_NAME}
+export GITHUB_SHA_ADMIN=${GKE_APP_ADMIN_NAME}
+export GITHUB_SHA_USER=${GKE_APP_USER_NAME}
 
 #Login to gcloud
 gcloud auth login
@@ -107,13 +111,22 @@ gcloud projects add-iam-policy-binding $GKE_PROJECT \
 # Download JSON
 gcloud iam service-accounts keys create ~/.private/flaskapp_key.json --iam-account=$GKE_SVC_MAIL
 
-# Build and push the docker image
+# Build and push the docker image (ADMIN APP)
 docker build --tag \
-  "$GKE_REGION-docker.pkg.dev/$GKE_PROJECT/$GKE_PROJECT/$GKE_APP_ADMIN_NAME:$GITHUB_SHA" \
-  ${APP_DIR}/
+  "$GKE_REGION-docker.pkg.dev/$GKE_PROJECT/$GKE_PROJECT/$GKE_APP_ADMIN_NAME:$GITHUB_SHA_ADMIN" \
+  ${APP_ADMIN_DIR}/
 gcloud auth configure-docker $GKE_REGION-docker.pkg.dev --quiet
 gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://$GKE_REGION-docker.pkg.dev
-docker push "$GKE_REGION-docker.pkg.dev/$GKE_PROJECT/$GKE_PROJECT/$GKE_APP_ADMIN_NAME:$GITHUB_SHA"
+docker push "$GKE_REGION-docker.pkg.dev/$GKE_PROJECT/$GKE_PROJECT/$GKE_APP_ADMIN_NAME:$GITHUB_SHA_ADMIN"
+
+
+# Build and push the docker image (USER APP)
+docker build --tag \
+  "$GKE_REGION-docker.pkg.dev/$GKE_PROJECT/$GKE_PROJECT/$GKE_APP_USER_NAME:$GITHUB_SHA_USER" \
+  ${APP_USER_DIR}/
+gcloud auth configure-docker $GKE_REGION-docker.pkg.dev --quiet
+gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin https://$GKE_REGION-docker.pkg.dev
+docker push "$GKE_REGION-docker.pkg.dev/$GKE_PROJECT/$GKE_PROJECT/$GKE_APP_USER_NAME:$GITHUB_SHA_USER"
 
 
 #Check envsubst is configured correctly (this example is on MacOS only)
@@ -139,14 +152,25 @@ else
   echo "clusterrolebinding $GKE_SERVICE_ACCOUNT already exists"
   echo "${check}"
 fi
+
+# Create postgresql database
+export PG_ROOT=`cat ~/.secrets | grep PG_ROOT | awk '{print $2}'`
+
+envsubst < ${DB_MANIFESTS_DIR}/secret_pg.yaml | kubectl apply -f -
+envsubst < ${DB_MANIFESTS_DIR}/csi_storage_class_pg.yaml | kubectl apply -f -
+envsubst < ${DB_MANIFESTS_DIR}/csi_pvc_pg.yaml | kubectl apply -f -
+envsubst < ${DB_MANIFESTS_DIR}/deployment_pg.yaml | kubectl apply -f -
+envsubst < ${DB_MANIFESTS_DIR}/service_pg.yaml | kubectl apply -f -
+
 ##########
 #Create namespace and service account
-envsubst < ${MANIFESTS_DIR}/flaskapp1.yaml | kubectl apply -f -
+envsubst < ${APP_MANIFESTS_DIR}/flaskapp1.yaml | kubectl apply -f -
 # Create deployment
-envsubst < ${MANIFESTS_DIR}/Deployment.yaml | kubectl apply -f -
-
+envsubst < ${APP_MANIFESTS_DIR}/Deployment_admin_ui.yaml | kubectl apply -f -
+envsubst < ${APP_MANIFESTS_DIR}/Deployment_user_ui.yaml | kubectl apply -f -
 # Create service
-envsubst < ${MANIFESTS_DIR}/Service.yaml | kubectl apply -f -
+envsubst < ${APP_MANIFESTS_DIR}/Service_admin_ui.yaml | kubectl apply -f -
+envsubst < ${APP_MANIFESTS_DIR}/Service_user_ui.yaml | kubectl apply -f -
 
 #Check application is running, test application REST endpioints
 curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE | awk '{print $4}'`:$GKE_APP_PORT/signup
