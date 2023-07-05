@@ -180,15 +180,15 @@ envsubst < ${APP_MANIFESTS_DIR}/Service_admin_ui.yaml | kubectl apply -f -
 envsubst < ${APP_MANIFESTS_DIR}/Service_user_ui.yaml | kubectl apply -f -
 
 #Check application is running, test application REST endpioints (ADMIN APP)
-curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE | awk '{print $4}'`:$GKE_ADMIN_APP_PORT/signup
-curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE | awk '{print $4}'`:$GKE_ADMIN_APP_PORT/login
-curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE | awk '{print $4}'`:$GKE_ADMIN_APP_PORT/logout
+curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE-admin | awk '{print $4}'`:$GKE_ADMIN_APP_PORT/signup
+curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE-admin | awk '{print $4}'`:$GKE_ADMIN_APP_PORT/login
+curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE-admin | awk '{print $4}'`:$GKE_ADMIN_APP_PORT/logout
 
 #Check application is running, test application REST endpioints (USER APP)
-curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE | awk '{print $4}'`:$GKE_USER_APP_PORT/login
-curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE | awk '{print $4}'`:$GKE_USER_APP_PORT/status
-curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE | awk '{print $4}'`:$GKE_USER_APP_PORT/restore
-curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE | awk '{print $4}'`:$GKE_USER_APP_PORT/attachdb 
+curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE-user | awk '{print $4}'`:$GKE_USER_APP_PORT/login
+curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE-user | awk '{print $4}'`:$GKE_USER_APP_PORT/status
+curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE-user | awk '{print $4}'`:$GKE_USER_APP_PORT/restore
+curl -Lk https://`kubectl get svc -n $GKE_NAMESPACE | grep $GKE_SERVICE-user | awk '{print $4}'`:$GKE_USER_APP_PORT/attachdb 
 
 kubectl get service
 echo ""
