@@ -28,7 +28,7 @@ env:
   APP_USER_DIR: dockerized/USER
   GKE_APP_ADMIN_PORT: 30443
   GKE_APP_USER_PORT: 50443
-  GITHUB_SHA: ${{ github.sha }}
+  GITHUB_SHA_USER: ${{ github.sha }}
 jobs:
   Checkout:
     runs-on: ubuntu-latest
@@ -102,7 +102,7 @@ jobs:
       run: |-  
         docker build \
           --tag "${{env.GKE_REGION}}-docker.pkg.dev/${{env.GKE_PROJECT}}/${{env.GKE_PROJECT}}/${{env.GKE_APP_USER_NAME}}:${{env.APP_VERSION}}" \
-          --build-arg GITHUB_SHA="$GITHUB_SHA" \
+          --build-arg GITHUB_SHA_USER="$GITHUB_SHA_USER" \
           --build-arg GITHUB_REF="$GITHUB_REF" \
           .
         gcloud auth configure-docker ${{env.GKE_REGION}}-docker.pkg.dev --quiet
