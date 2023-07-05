@@ -18,10 +18,15 @@ export EKS_SERVICE_ACCOUNT="flaskapp1-sa"
 export EKS_NAMESPACE="flaskapp"
 export IMAGE_NAME=`cat ~/Downloads/ecr_image.txt | grep imageName|awk '{print $2}'`
 export APP_MANIFEST_DIR="../manifest/flaskapp1"
-export EKS_PRIVATE_SUBNET1="subnet-076afdef0f9911f16"
-export EKS_PRIVATE_SUBNET2="subnet-001ae6deda7adaf15"
-export EKS_PUBLIC_SUBNET1="subnet-065bbff8f2e547c0e"
-export EKS_PUBLIC_SUBNET2="subnet-078382a4e4f2333da"
+# export EKS_PRIVATE_SUBNET1="subnet-076afdef0f9911f16"
+# export EKS_PRIVATE_SUBNET2="subnet-001ae6deda7adaf15"
+# export EKS_PUBLIC_SUBNET1="subnet-065bbff8f2e547c0e"
+# export EKS_PUBLIC_SUBNET2="subnet-078382a4e4f2333da"
+export SUBNET_FILE=~/Downloads/subnets.list
+export EKS_PUBLIC_SUBNET1=`awk 'NR==1' ${SUBNET_FILE}`
+export EKS_PUBLIC_SUBNET2=`awk 'NR==2' ${SUBNET_FILE}`
+export EKS_PRIVATE_SUBNET1=`awk 'NR==3' ${SUBNET_FILE}`
+export EKS_PRIVATE_SUBNET2=`awk 'NR==4' ${SUBNET_FILE}`
 export EKS_APP_ADMIN_NAME="flaskapp1-admin"
 export EKS_APP_USER_NAME="flaskapp1-user"
 export FLASK_ADMIN_IMAGE_NAME=`cat ~/Downloads/ecr_image.txt|grep "ADMIN APP" | awk '{print $5}'`
