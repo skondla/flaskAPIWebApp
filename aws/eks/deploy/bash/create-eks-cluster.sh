@@ -81,8 +81,6 @@ brew install weaveworks/tap/eksctl
 . <(eksctl completion bash)
 
 
-
-
 #FULL ACCESS TO EKS*
 
 cat >eks_cluster_role_policy.json <<EOF
@@ -151,8 +149,6 @@ aws iam attach-role-policy \
 aws iam attach-role-policy \
   --policy-arn arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy \
   --role-name AmazonEKSNodeRole
-
-
 
 #Provision Cluster
 #eksctl create cluster --config-file ./cr_eks.yaml
