@@ -175,7 +175,7 @@ jobs:
     - name: Deploy
       working-directory: ${{env.MANIFESTS_DIR}}
       run: |-
-        envsubst < flaskapp1.yaml | kubectl apply -f -
+        # envsubst < flaskapp1.yaml | kubectl apply -f -
         envsubst < Service_admin_ui.yaml | kubectl apply -f -
         envsubst < Deployment_admin_ui.yaml | kubectl apply -f -
         kubectl get pods -o wide
