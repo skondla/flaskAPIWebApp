@@ -109,6 +109,12 @@ gcloud projects add-iam-policy-binding $GKE_PROJECT \
   --member=serviceAccount:$GKE_SVC_MAIL \
   --role=roles/artifactregistry.admin
 
+
+# Add 'container.namespaces.get' role:
+# gcloud projects add-iam-policy-binding $GKE_PROJECT \
+#   --member=serviceAccount:$GKE_SVC_MAIL \
+#   --role=roles/container.namespaces.get
+
 # Download JSON
 gcloud iam service-accounts keys create ~/.private/flaskapp_key.json --iam-account=$GKE_SVC_MAIL
 
@@ -194,3 +200,6 @@ echo "Please create a secret named 'GKE_SA_KEY' in GitHub with the followign con
 echo ""
 cat ~/.private/flaskapp_key.json | base64
 echo ""
+
+
+#resource "serviceaccounts" in API group "" in the namespace "flaskapp1-namespace": requires one of ["container.serviceAccounts.get"] permission(s
