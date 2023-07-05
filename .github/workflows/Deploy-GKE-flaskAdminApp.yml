@@ -28,6 +28,7 @@ env:
   APP_USER_DIR: dockerized/USER
   GKE_APP_ADMIN_PORT: 30443
   GITHUB_SHA_ADMIN: ${{ github.sha }}
+  GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 jobs:
   Checkout:
     runs-on: ubuntu-latest
