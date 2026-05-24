@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DevSecOps, Pipeline Automation &amp; Infrastructure Architecture</title>
+<style>
+  :root{
+    --bg:#0B1120; --panel:#0F172A; --panel2:#131F38; --card:#16233F;
+    --line:#243352; --text:#E2E8F0; --muted:#94A3B8; --dim:#64748B;
+    --cyan:#22D3EE; --teal:#2DD4BF; --violet:#A78BFA; --indigo:#818CF8;
+    --amber:#FBBF24; --red:#F87171; --green:#34D399; --pink:#F472B6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);color:var(--text);
+    font-family:'Segoe UI',Helvetica,Arial,sans-serif;
+    line-height:1.65;font-size:15.5px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 28px;}
+
+  /* ---------- HERO ---------- */
+  header.hero{
+    background:
+      radial-gradient(900px 380px at 12% -10%,rgba(34,211,238,.20),transparent 60%),
+      radial-gradient(820px 420px at 92% 0%,rgba(167,139,250,.22),transparent 60%),
+      linear-gradient(180deg,#0d1730,#0B1120);
+    border-bottom:1px solid var(--line);
+    padding:64px 0 52px;
+  }
+  .badge{
+    display:inline-block;font-size:12px;letter-spacing:2.5px;font-weight:700;
+    color:var(--cyan);background:rgba(34,211,238,.10);
+    border:1px solid rgba(34,211,238,.35);border-radius:999px;
+    padding:6px 16px;text-transform:uppercase;margin-bottom:22px;
+  }
+  h1{
+    font-size:42px;line-height:1.18;font-weight:800;letter-spacing:-.5px;
+    background:linear-gradient(100deg,#fff 10%,var(--cyan) 55%,var(--violet) 95%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    max-width:880px;
+  }
+  .hero p.sub{color:var(--muted);font-size:17px;margin-top:18px;max-width:760px;}
+  .hero-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:28px;}
+  .hero-meta span{
+    font-size:12.5px;color:var(--muted);background:var(--panel2);
+    border:1px solid var(--line);border-radius:8px;padding:7px 13px;
+  }
+  .hero-meta span b{color:var(--teal);}
+
+  /* ---------- TOC ---------- */
+  nav.toc{
+    background:var(--panel);border:1px solid var(--line);border-radius:16px;
+    padding:24px 26px;margin:38px 0 10px;
+  }
+  nav.toc h4{font-size:12px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;margin-bottom:14px;}
+  .toc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 30px;}
+  .toc-grid a{
+    color:var(--text);text-decoration:none;font-size:14px;
+    padding:7px 10px;border-radius:8px;display:flex;gap:10px;align-items:baseline;
+    border:1px solid transparent;transition:.15s;
+  }
+  .toc-grid a:hover{background:var(--card);border-color:var(--line);color:var(--cyan);}
+  .toc-grid a i{color:var(--cyan);font-style:normal;font-weight:700;font-size:12px;min-width:20px;}
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:46px 0 8px;border-bottom:1px solid rgba(36,51,82,.55);}
+  section:last-of-type{border-bottom:none;}
+  .kicker{font-size:12px;letter-spacing:2.5px;font-weight:700;text-transform:uppercase;color:var(--violet);margin-bottom:10px;}
+  h2{font-size:29px;font-weight:800;letter-spacing:-.3px;margin-bottom:6px;color:#fff;}
+  h2 .num{
+    display:inline-block;font-size:15px;font-weight:800;color:var(--bg);
+    background:linear-gradient(135deg,var(--cyan),var(--teal));
+    width:34px;height:34px;line-height:34px;text-align:center;border-radius:10px;
+    margin-right:14px;vertical-align:3px;
+  }
+  h3{font-size:19px;font-weight:700;color:#fff;margin:30px 0 10px;}
+  h4.mini{font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--teal);margin:24px 0 8px;}
+  p{margin:10px 0;color:#CBD5E1;}
+  p.lead{font-size:16.5px;color:var(--muted);}
+  strong{color:#fff;font-weight:700;}
+  em{color:var(--amber);font-style:normal;font-weight:600;}
+  a.link{color:var(--cyan);}
+  ul,ol{margin:10px 0 10px 6px;padding-left:22px;}
+  li{margin:6px 0;color:#CBD5E1;}
+  li::marker{color:var(--cyan);}
+  code{
+    background:var(--panel2);border:1px solid var(--line);border-radius:5px;
+    padding:1px 6px;font-family:Consolas,Monaco,monospace;font-size:13px;color:var(--teal);
+  }
+
+  /* ---------- CARDS / GRIDS ---------- */
+  .grid{display:grid;gap:16px;margin:22px 0;}
+  .g2{grid-template-columns:repeat(2,1fr);}
+  .g3{grid-template-columns:repeat(3,1fr);}
+  .g4{grid-template-columns:repeat(4,1fr);}
+  .card{
+    background:linear-gradient(165deg,var(--card),var(--panel));
+    border:1px solid var(--line);border-radius:14px;padding:20px 20px 18px;
+    position:relative;overflow:hidden;
+  }
+  .card::before{content:"";position:absolute;left:0;top:0;width:100%;height:3px;
+    background:linear-gradient(90deg,var(--cyan),var(--violet));}
+  .card.t-teal::before{background:linear-gradient(90deg,var(--teal),var(--green));}
+  .card.t-amber::before{background:linear-gradient(90deg,var(--amber),var(--pink));}
+  .card.t-violet::before{background:linear-gradient(90deg,var(--violet),var(--indigo));}
+  .card .ic{font-size:22px;margin-bottom:8px;display:block;}
+  .card h5{font-size:15.5px;color:#fff;margin-bottom:6px;font-weight:700;}
+  .card p{font-size:13.5px;margin:4px 0;color:var(--muted);}
+  .card .tag{font-size:10.5px;letter-spacing:1.5px;font-weight:700;text-transform:uppercase;
+    color:var(--cyan);}
+
+  /* ---------- CALLOUTS ---------- */
+  .callout{
+    border-left:3px solid var(--cyan);background:var(--panel2);
+    border-radius:0 12px 12px 0;padding:16px 20px;margin:20px 0;
+  }
+  .callout.warn{border-color:var(--amber);}
+  .callout.danger{border-color:var(--red);}
+  .callout.good{border-color:var(--green);}
+  .callout .ct{font-size:11px;letter-spacing:2px;font-weight:800;text-transform:uppercase;color:var(--cyan);}
+  .callout.warn .ct{color:var(--amber);} .callout.danger .ct{color:var(--red);} .callout.good .ct{color:var(--green);}
+  .callout p{margin:6px 0 0;font-size:14px;}
+
+  /* ---------- TABLE ---------- */
+  .tbl-wrap{overflow-x:auto;margin:22px 0;border:1px solid var(--line);border-radius:14px;}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:560px;}
+  th{
+    background:var(--panel2);color:var(--cyan);text-align:left;
+    padding:13px 15px;font-size:11.5px;letter-spacing:1.2px;text-transform:uppercase;
+    border-bottom:1px solid var(--line);
+  }
+  td{padding:12px 15px;border-bottom:1px solid rgba(36,51,82,.6);color:#CBD5E1;vertical-align:top;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(34,211,238,.04);}
+  td b{color:#fff;}
+  .pill{display:inline-block;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:999px;letter-spacing:.5px;}
+  .pill.g{background:rgba(52,211,153,.14);color:var(--green);border:1px solid rgba(52,211,153,.4);}
+  .pill.a{background:rgba(251,191,36,.14);color:var(--amber);border:1px solid rgba(251,191,36,.4);}
+  .pill.r{background:rgba(248,113,113,.14);color:var(--red);border:1px solid rgba(248,113,113,.4);}
+  .pill.b{background:rgba(34,211,238,.14);color:var(--cyan);border:1px solid rgba(34,211,238,.4);}
+
+  /* ---------- PIPELINE FLOW ---------- */
+  .flow{display:flex;flex-wrap:wrap;gap:0;margin:24px 0;align-items:stretch;}
+  .stage{
+    flex:1;min-width:118px;background:var(--card);border:1px solid var(--line);
+    padding:14px 12px;position:relative;text-align:center;
+  }
+  .stage:first-child{border-radius:12px 0 0 12px;}
+  .stage:last-child{border-radius:0 12px 12px 0;}
+  .stage:not(:last-child){border-right:none;}
+  .stage .sn{font-size:10px;color:var(--dim);font-weight:700;letter-spacing:1px;}
+  .stage .st{font-size:13.5px;font-weight:700;color:#fff;margin:4px 0 3px;}
+  .stage .sg{font-size:10.5px;color:var(--teal);font-weight:600;}
+  .stage .arrow{position:absolute;right:-9px;top:50%;transform:translateY(-50%);
+    width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;
+    border-left:9px solid var(--cyan);z-index:2;}
+  .stage.sec{border-color:rgba(251,191,36,.5);}
+  .stage.sec .st{color:var(--amber);}
+
+  /* ---------- DEVSECOPS LOOP ---------- */
+  .loop{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0;}
+  .loop-item{
+    flex:1;min-width:140px;background:var(--panel2);border:1px solid var(--line);
+    border-radius:12px;padding:14px;
+  }
+  .loop-item .ph{font-size:11px;letter-spacing:1.5px;font-weight:800;text-transform:uppercase;}
+  .loop-item.dev .ph{color:var(--cyan);}
+  .loop-item.sec .ph{color:var(--amber);}
+  .loop-item.ops .ph{color:var(--green);}
+  .loop-item h6{font-size:14px;color:#fff;margin:5px 0 4px;font-weight:700;}
+  .loop-item p{font-size:12px;color:var(--muted);margin:0;}
+
+  /* ---------- SCORECARD ---------- */
+  .score{margin:8px 0;}
+  .score-row{display:flex;align-items:center;gap:14px;margin:11px 0;}
+  .score-row .lbl{width:210px;font-size:13.5px;color:#fff;font-weight:600;flex-shrink:0;}
+  .bar{flex:1;height:11px;background:var(--panel2);border-radius:999px;overflow:hidden;border:1px solid var(--line);}
+  .bar span{display:block;height:100%;border-radius:999px;}
+  .score-row .val{width:62px;text-align:right;font-size:12.5px;font-weight:700;color:var(--muted);}
+  .fill-g{background:linear-gradient(90deg,var(--green),var(--teal));}
+  .fill-a{background:linear-gradient(90deg,var(--amber),#fbbf24);}
+  .fill-r{background:linear-gradient(90deg,var(--red),var(--pink));}
+
+  /* ---------- ARCH DIAGRAM ---------- */
+  .arch{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px;margin:22px 0;}
+  .arch-layer{
+    display:flex;gap:10px;flex-wrap:wrap;margin:9px 0;align-items:center;
+  }
+  .arch-tag{
+    font-size:10px;writing-mode:vertical-rl;transform:rotate(180deg);
+    letter-spacing:1.5px;font-weight:800;text-transform:uppercase;color:var(--dim);
+    min-width:18px;text-align:center;
+  }
+  .arch-box{
+    flex:1;min-width:120px;background:var(--card);border:1px solid var(--line);
+    border-radius:10px;padding:11px 12px;text-align:center;
+  }
+  .arch-box.acc-c{border-color:rgba(34,211,238,.45);}
+  .arch-box.acc-v{border-color:rgba(167,139,250,.45);}
+  .arch-box.acc-t{border-color:rgba(45,212,191,.45);}
+  .arch-box.acc-a{border-color:rgba(251,191,36,.45);}
+  .arch-box .abt{font-size:13px;font-weight:700;color:#fff;}
+  .arch-box .abd{font-size:10.5px;color:var(--muted);margin-top:2px;}
+
+  /* repo languages */
+  .langbar{display:flex;height:14px;border-radius:8px;overflow:hidden;margin:14px 0 6px;border:1px solid var(--line);}
+  .langbar span{height:100%;}
+  .langkey{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);}
+  .langkey i{width:10px;height:10px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:0;}
+
+  footer{padding:40px 0 60px;text-align:center;color:var(--dim);font-size:13px;}
+  footer .fl{color:var(--cyan);font-weight:700;}
+  .divider-num{display:flex;align-items:center;gap:14px;margin:34px 0 6px;}
+  .divider-num span{height:1px;flex:1;background:var(--line);}
+  .divider-num b{font-size:12px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;}
+  @media(max-width:840px){
+    .g2,.g3,.g4,.toc-grid{grid-template-columns:1fr;}
+    h1{font-size:32px;} h2{font-size:23px;}
+    .score-row .lbl{width:130px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="badge">Technical Reference &amp; Repository Assessment</span>
+    <h1>DevSecOps, Pipeline Automation &amp; Infrastructure Architecture</h1>
+    <p class="sub">A detailed analysis of secure CI/CD pipeline design — modern frameworks, push vs. pull delivery,
+      security-by-design dataflows, and cloud-native infrastructure — followed by a hands-on review of the
+      <code>skondla/flaskAPIWebApp</code> repository and where it sits on the DevSecOps maturity curve.</p>
+    <div class="hero-meta">
+      <span>Scope <b>End-to-end SDLC</b></span>
+      <span>Repo <b>flaskAPIWebApp</b></span>
+      <span>Clouds <b>AWS · Azure · GCP</b></span>
+      <span>Focus <b>Security by Design</b></span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <nav class="toc">
+    <h4>Contents</h4>
+    <div class="toc-grid">
+      <a href="#s1"><i>01</i> DevSecOps Fundamentals &amp; Shift-Left</a>
+      <a href="#s2"><i>02</i> Pipeline Automation Concepts</a>
+      <a href="#s3"><i>03</i> Modern CI/CD Frameworks</a>
+      <a href="#s4"><i>04</i> Push vs. Pull Delivery Models</a>
+      <a href="#s5"><i>05</i> Security by Design &amp; Pipeline Gates</a>
+      <a href="#s6"><i>06</i> Pipeline Flow &amp; Dataflow</a>
+      <a href="#s7"><i>07</i> Infrastructure Architecture</a>
+      <a href="#s8"><i>08</i> Repository Review: flaskAPIWebApp</a>
+      <a href="#s9"><i>09</i> DevSecOps Maturity Scorecard</a>
+      <a href="#s10"><i>10</i> Gaps, Recommendations &amp; Roadmap</a>
+    </div>
+  </nav>
+
+  <!-- ============ 1 ============ -->
+  <section id="s1">
+    <div class="kicker">Foundations</div>
+    <h2><span class="num">1</span>DevSecOps Fundamentals &amp; Shift-Left</h2>
+    <p class="lead">DevSecOps is the practice of embedding security as a continuous, automated, and shared
+      responsibility across the entire software delivery lifecycle — rather than a gate applied at the end.</p>
+
+    <p>Traditional DevOps optimized for <strong>speed and flow</strong>: developers and operations teams collapsed
+      silos so code could move from commit to production rapidly. But security frequently remained a late-stage,
+      manual checkpoint — a penetration test or audit performed days before release. The result was a structural
+      conflict: security findings arrived when remediation was most expensive and most disruptive to delivery.</p>
+
+    <p>DevSecOps resolves this by treating security as <strong>code, automation, and culture</strong>. Every security
+      control becomes a versioned, testable, and repeatable artifact that runs inside the pipeline alongside build
+      and test. The defining principle is <em>shift-left</em>: moving security activities as early as possible
+      toward the developer's keyboard, where defects are cheapest to find and fix.</p>
+
+    <div class="grid g3">
+      <div class="card">
+        <span class="tag">Principle 01</span>
+        <h5>Shift Left</h5>
+        <p>Run security checks at commit and pull-request time. The cost of fixing a defect rises ~10× per stage it
+          escapes — IDE → CI → staging → production.</p>
+      </div>
+      <div class="card t-teal">
+        <span class="tag">Principle 02</span>
+        <h5>Shared Responsibility</h5>
+        <p>Security is owned by everyone. Developers triage scan results; the security team curates policy,
+          guardrails, and threat models — not manual reviews.</p>
+      </div>
+      <div class="card t-violet">
+        <span class="tag">Principle 03</span>
+        <h5>Automate Everything</h5>
+        <p>Every control — SAST, SCA, secrets, IaC, container, DAST — runs without a human trigger and produces
+          machine-readable, auditable evidence.</p>
+      </div>
+      <div class="card t-amber">
+        <span class="tag">Principle 04</span>
+        <h5>Continuous Feedback</h5>
+        <p>Findings return to developers in their own tools (PR comments, IDE) within minutes, not in a quarterly
+          report. Fast feedback is what makes shift-left stick.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Principle 05</span>
+        <h5>Policy as Code</h5>
+        <p>Compliance and security rules are expressed declaratively (OPA/Rego, Kyverno, Sentinel) and enforced
+          automatically and uniformly.</p>
+      </div>
+      <div class="card t-teal">
+        <span class="tag">Principle 06</span>
+        <h5>Immutable &amp; Reproducible</h5>
+        <p>Artifacts are built once, signed, scanned, and promoted unchanged. Infrastructure is rebuilt from code,
+          never patched in place.</p>
+      </div>
+    </div>
+
+    <h3>The DevSecOps Lifecycle Loop</h3>
+    <p>Security is woven into all phases of the classic infinity loop. Each phase has dedicated, automatable
+      controls:</p>
+    <div class="loop">
+      <div class="loop-item dev"><div class="ph">Plan</div><h6>Threat Modeling</h6>
+        <p>Abuse cases, data classification, security requirements as backlog items.</p></div>
+      <div class="loop-item dev"><div class="ph">Code</div><h6>Secure Coding</h6>
+        <p>IDE linters, pre-commit hooks, secrets prevention, peer review.</p></div>
+      <div class="loop-item sec"><div class="ph">Build</div><h6>SAST &amp; SCA</h6>
+        <p>Static analysis, dependency &amp; license scanning, SBOM generation.</p></div>
+      <div class="loop-item sec"><div class="ph">Test</div><h6>DAST &amp; IAST</h6>
+        <p>Dynamic scans, fuzzing, security unit &amp; integration tests.</p></div>
+      <div class="loop-item sec"><div class="ph">Release</div><h6>Sign &amp; Verify</h6>
+        <p>Artifact signing, image scanning, admission policy, provenance.</p></div>
+      <div class="loop-item ops"><div class="ph">Deploy</div><h6>Hardened Config</h6>
+        <p>IaC scanning, least-privilege, secret injection, network policy.</p></div>
+      <div class="loop-item ops"><div class="ph">Operate</div><h6>Runtime Defense</h6>
+        <p>CWPP/CDR, drift detection, WAF, posture management (CSPM).</p></div>
+      <div class="loop-item ops"><div class="ph">Monitor</div><h6>Detect &amp; Respond</h6>
+        <p>SIEM, audit logging, anomaly detection, feedback to Plan.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ 2 ============ -->
+  <section id="s2">
+    <div class="kicker">Automation</div>
+    <h2><span class="num">2</span>Pipeline Automation Concepts</h2>
+    <p class="lead">A pipeline is an automated, version-controlled assembly line that transforms a source-code commit
+      into a verified, deployable, and observable artifact — with security gates embedded at each stage.</p>
+
+    <h3>Core Building Blocks</h3>
+    <div class="grid g2">
+      <div class="card">
+        <h5>Continuous Integration (CI)</h5>
+        <p>Every commit is automatically built, unit-tested, and statically analyzed. CI keeps the mainline always
+          releasable and surfaces integration defects within minutes of merge.</p>
+      </div>
+      <div class="card t-teal">
+        <h5>Continuous Delivery (CD)</h5>
+        <p>Every passing build is automatically packaged and promoted to staging environments. A release to
+          production is one approval click away — the artifact is always deploy-ready.</p>
+      </div>
+      <div class="card t-violet">
+        <h5>Continuous Deployment</h5>
+        <p>The fully automated extension of delivery — every change that clears all gates ships to production
+          with no human intervention. Demands very high test &amp; observability confidence.</p>
+      </div>
+      <div class="card t-amber">
+        <h5>Orchestration</h5>
+        <p>Coordinating multi-stage, multi-job, fan-out / fan-in workflows with dependency graphs, conditional
+          execution, parallelism, retries, and approval gates.</p>
+      </div>
+    </div>
+
+    <h3>What "Well-Orchestrated" Means</h3>
+    <p>Orchestration is the difference between a brittle script and a resilient delivery system. A
+      well-orchestrated pipeline exhibits these properties:</p>
+    <ul>
+      <li><strong>Staged with explicit dependencies</strong> — jobs form a DAG; <code>Scan</code> only runs after
+        <code>Build</code>; <code>Deploy</code> only after <code>Scan</code> passes.</li>
+      <li><strong>Parallelized where independent</strong> — SAST, SCA, and secret scanning run concurrently to
+        keep wall-clock time low.</li>
+      <li><strong>Fail-fast with quality gates</strong> — a critical finding stops the pipeline before wasted
+        compute or an unsafe deploy.</li>
+      <li><strong>Idempotent &amp; reproducible</strong> — re-running a stage yields the same result; builds are
+        deterministic and pinned.</li>
+      <li><strong>Environment-promoted</strong> — the <em>same immutable artifact</em> flows dev → staging → prod;
+        only configuration changes.</li>
+      <li><strong>Observable &amp; auditable</strong> — every run emits logs, metrics, test reports, scan results,
+        and notifications; evidence is retained for compliance.</li>
+      <li><strong>Secured by least privilege</strong> — short-lived, scoped credentials (OIDC federation), no
+        long-lived secrets on runners.</li>
+    </ul>
+
+    <div class="callout">
+      <span class="ct">Key Idea</span>
+      <p>A pipeline is itself a production system. It is attacked, audited, and depended upon — so it must be
+        designed with the same rigor as the application it ships. This is the discipline of
+        <strong>pipeline security</strong> (a.k.a. CI/CD supply-chain hardening).</p>
+    </div>
+  </section>
+
+  <!-- ============ 3 ============ -->
+  <section id="s3">
+    <div class="kicker">Tooling Landscape</div>
+    <h2><span class="num">3</span>Modern CI/CD Frameworks</h2>
+    <p class="lead">The CI/CD ecosystem splits into pipeline orchestrators (run build/test/scan jobs) and delivery
+      controllers (reconcile desired state into clusters). Modern stacks combine both.</p>
+
+    <h4 class="mini">Pipeline Orchestrators (CI)</h4>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Framework</th><th>Model</th><th>Strengths</th><th>Best Fit</th></tr></thead>
+        <tbody>
+          <tr><td><b>GitHub Actions</b></td><td>YAML workflows, hosted/self-hosted runners</td>
+            <td>Native to GitHub, huge Marketplace, OIDC to clouds, matrix builds</td><td>GitHub-centric teams, fast adoption</td></tr>
+          <tr><td><b>GitLab CI/CD</b></td><td>Single <code>.gitlab-ci.yml</code>, integrated DevSecOps</td>
+            <td>Built-in SAST/DAST/SCA, container registry, end-to-end platform</td><td>All-in-one platform consolidation</td></tr>
+          <tr><td><b>Jenkins</b></td><td>Groovy pipelines, plugin-driven</td>
+            <td>Maximum flexibility, 1800+ plugins, on-prem control</td><td>Legacy estates, highly customized flows</td></tr>
+          <tr><td><b>CircleCI</b></td><td>YAML, orbs (reusable packages)</td>
+            <td>Fast caching, strong parallelism, Docker-native</td><td>Speed-focused cloud-native teams</td></tr>
+          <tr><td><b>Tekton</b></td><td>Kubernetes-native CRDs (Tasks/Pipelines)</td>
+            <td>Runs as pods, vendor-neutral, cloud-portable, scalable</td><td>K8s-first platform engineering</td></tr>
+          <tr><td><b>Azure DevOps</b></td><td>YAML/classic pipelines</td>
+            <td>Deep Azure integration, boards + repos + artifacts</td><td>Microsoft-aligned enterprises</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4 class="mini">Delivery Controllers (GitOps CD)</h4>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Tool</th><th>Pattern</th><th>What It Does</th></tr></thead>
+        <tbody>
+          <tr><td><b>Argo CD</b></td><td>Pull-based GitOps controller</td>
+            <td>Continuously reconciles a Git-declared desired state into Kubernetes; visual sync status &amp; drift detection</td></tr>
+          <tr><td><b>Flux CD</b></td><td>Pull-based GitOps toolkit</td>
+            <td>Lightweight controllers for Git/Helm/OCI sources; image automation; tight CNCF integration</td></tr>
+          <tr><td><b>Argo Rollouts</b></td><td>Progressive delivery</td>
+            <td>Canary, blue-green, and analysis-driven automated promotion/rollback</td></tr>
+          <tr><td><b>Spinnaker</b></td><td>Multi-cloud delivery</td>
+            <td>Sophisticated deployment strategies across many cloud targets</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h4 class="mini">Security Tooling Embedded in Pipelines</h4>
+    <div class="grid g4">
+      <div class="card"><span class="ic">🔍</span><h5>SAST</h5><p>SonarQube, Semgrep, CodeQL, Bandit — static source analysis.</p></div>
+      <div class="card t-teal"><span class="ic">📦</span><h5>SCA</h5><p>Snyk, Dependabot, Trivy, OWASP Dependency-Check — dependency &amp; CVE scanning.</p></div>
+      <div class="card t-violet"><span class="ic">🐳</span><h5>Container</h5><p>Trivy, Grype, Clair — image &amp; OS package vulnerability scanning.</p></div>
+      <div class="card t-amber"><span class="ic">🔑</span><h5>Secrets</h5><p>Gitleaks, TruffleHog, git-secrets — credential leak detection.</p></div>
+      <div class="card"><span class="ic">🏗️</span><h5>IaC Scan</h5><p>Checkov, tfsec, KICS, Terrascan — misconfiguration scanning.</p></div>
+      <div class="card t-teal"><span class="ic">🕷️</span><h5>DAST</h5><p>OWASP ZAP, Burp — running-application attack simulation.</p></div>
+      <div class="card t-violet"><span class="ic">✍️</span><h5>Sign / SBOM</h5><p>Cosign, Sigstore, Syft — artifact signing, provenance, SBOM.</p></div>
+      <div class="card t-amber"><span class="ic">🛡️</span><h5>Admission</h5><p>OPA Gatekeeper, Kyverno — policy enforcement at deploy time.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ 4 ============ -->
+  <section id="s4">
+    <div class="kicker">Delivery Strategy</div>
+    <h2><span class="num">4</span>Push vs. Pull Delivery Models</h2>
+    <p class="lead">The single most consequential architectural choice in modern CD is <em>who initiates the
+      deployment</em> — the external pipeline (push) or an in-cluster agent (pull).</p>
+
+    <div class="grid g2">
+      <div class="card">
+        <span class="tag">Model A</span>
+        <h5>⬆ Push-Based Deployment</h5>
+        <p>The CI/CD runner holds cluster credentials and actively pushes changes — <code>kubectl apply</code>,
+          <code>helm upgrade</code>, <code>terraform apply</code> — into the target environment.</p>
+        <p style="margin-top:10px;color:#9fb3d1;"><b style="color:var(--green)">+ </b>Simple mental model · immediate, imperative · easy to add to any pipeline.</p>
+        <p style="color:#9fb3d1;"><b style="color:var(--red)">– </b>Runner needs broad cluster credentials (large blast radius) · no automatic drift correction · cluster state can silently diverge from Git.</p>
+      </div>
+      <div class="card t-teal">
+        <span class="tag">Model B</span>
+        <h5>⬇ Pull-Based Deployment (GitOps)</h5>
+        <p>An agent <em>inside</em> the cluster (Argo CD, Flux) watches a Git repository and continuously
+          reconciles the live state to match the declared desired state.</p>
+        <p style="margin-top:10px;color:#9fb3d1;"><b style="color:var(--green)">+ </b>No external credentials in CI · Git is the single source of truth · automatic drift detection &amp; self-healing · easy audit &amp; rollback (<code>git revert</code>).</p>
+        <p style="color:#9fb3d1;"><b style="color:var(--red)">– </b>Higher initial setup · requires declarative manifests · primarily Kubernetes-oriented.</p>
+      </div>
+    </div>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Dimension</th><th>Push</th><th>Pull / GitOps</th></tr></thead>
+        <tbody>
+          <tr><td><b>Trigger</b></td><td>CI pipeline runs <code>apply</code></td><td>In-cluster agent detects Git change</td></tr>
+          <tr><td><b>Credentials</b></td><td>Cluster creds stored in CI <span class="pill r">larger attack surface</span></td><td>Agent uses local RBAC <span class="pill g">no creds leave cluster</span></td></tr>
+          <tr><td><b>Source of truth</b></td><td>Pipeline run history</td><td>Git repository (declarative)</td></tr>
+          <tr><td><b>Drift handling</b></td><td>Manual / undetected</td><td>Continuous reconciliation &amp; self-heal</td></tr>
+          <tr><td><b>Rollback</b></td><td>Re-run an older pipeline</td><td><code>git revert</code> — instant, audited</td></tr>
+          <tr><td><b>Auditability</b></td><td>Scattered across logs</td><td>Full Git history = change ledger</td></tr>
+          <tr><td><b>Multi-cluster</b></td><td>Scales poorly (creds × clusters)</td><td>Scales naturally (agent per cluster)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout good">
+      <span class="ct">Recommended Pattern</span>
+      <p>Use a <strong>hybrid model</strong>: the CI pipeline handles build, test, scan, sign, and push of the
+        <em>image</em> to a registry, then commits an updated image tag to a Git config repo. A pull-based GitOps
+        controller takes over the actual cluster deployment. CI never touches the cluster directly — the security
+        and audit win is substantial.</p>
+    </div>
+  </section>
+
+  <!-- ============ 5 ============ -->
+  <section id="s5">
+    <div class="kicker">Security by Design</div>
+    <h2><span class="num">5</span>Security by Design &amp; Pipeline Gates</h2>
+    <p class="lead">"Security by design" means every stage of the pipeline carries a dedicated, automated control
+      that must pass before the artifact advances. Security is the architecture, not an add-on.</p>
+
+    <h3>Security Gates Mapped to Pipeline Stages</h3>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Stage</th><th>Security Gate</th><th>Tooling</th><th>Fail Condition</th></tr></thead>
+        <tbody>
+          <tr><td><b>Pre-commit</b></td><td>Secret scan, lint</td><td>Gitleaks, pre-commit hooks</td><td>Hard-coded secret detected</td></tr>
+          <tr><td><b>Commit / PR</b></td><td>SAST + SCA</td><td>Semgrep/CodeQL, Snyk/Trivy</td><td>Critical code flaw or vulnerable dependency</td></tr>
+          <tr><td><b>Build</b></td><td>SBOM + image scan</td><td>Syft, Trivy, Grype</td><td>Critical/High CVE in image layers</td></tr>
+          <tr><td><b>Package</b></td><td>Artifact signing</td><td>Cosign / Sigstore</td><td>Unsigned or unverifiable artifact</td></tr>
+          <tr><td><b>IaC</b></td><td>Misconfig scan</td><td>Checkov, tfsec, KICS</td><td>Open security group, public bucket, no encryption</td></tr>
+          <tr><td><b>Pre-deploy</b></td><td>Admission policy</td><td>OPA Gatekeeper, Kyverno</td><td>Privileged pod, missing limits, untrusted registry</td></tr>
+          <tr><td><b>Deploy / Test</b></td><td>DAST</td><td>OWASP ZAP</td><td>Exploitable runtime vulnerability</td></tr>
+          <tr><td><b>Runtime</b></td><td>Posture &amp; threat detection</td><td>CSPM, CWPP, Falco</td><td>Drift, anomaly, active exploit</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Hardening the Pipeline Itself</h3>
+    <div class="grid g3">
+      <div class="card"><span class="ic">🪪</span><h5>OIDC Federation</h5><p>Replace long-lived cloud keys with short-lived, workload-scoped tokens issued per run.</p></div>
+      <div class="card t-teal"><span class="ic">🔐</span><h5>Secret Management</h5><p>Inject secrets from a vault at runtime; never store plaintext in YAML or env files.</p></div>
+      <div class="card t-violet"><span class="ic">📌</span><h5>Pin Dependencies</h5><p>Pin actions/images by SHA digest, not floating tags, to block supply-chain swaps.</p></div>
+      <div class="card t-amber"><span class="ic">🎯</span><h5>Least-Privilege Tokens</h5><p>Scope pipeline tokens to the minimum permissions and resources needed.</p></div>
+      <div class="card"><span class="ic">🧾</span><h5>Provenance / SLSA</h5><p>Generate signed build provenance attestations; verify at deploy time.</p></div>
+      <div class="card t-teal"><span class="ic">🛂</span><h5>Protected Branches</h5><p>Require reviews, signed commits, and passing checks before merge to main.</p></div>
+    </div>
+
+    <div class="callout warn">
+      <span class="ct">Common Anti-Pattern</span>
+      <p>Adding a scanner but configuring it as <strong>non-blocking</strong> (no fail exit-code). This produces a
+        "security theater" pipeline — scans run, reports are generated, but vulnerable artifacts still ship.
+        A gate that cannot fail is not a gate.</p>
+    </div>
+  </section>
+
+  <!-- ============ 6 ============ -->
+  <section id="s6">
+    <div class="kicker">Flow Design</div>
+    <h2><span class="num">6</span>Pipeline Flow &amp; Dataflow</h2>
+    <p class="lead">A reference secure pipeline — each stage consumes the previous stage's output and emits both an
+      artifact and security evidence.</p>
+
+    <h3>End-to-End Pipeline Flow</h3>
+    <div class="flow">
+      <div class="stage"><div class="sn">01</div><div class="st">Commit</div><div class="sg">Source · Git</div><div class="arrow"></div></div>
+      <div class="stage sec"><div class="sn">02</div><div class="st">Static Scan</div><div class="sg">SAST · SCA · Secrets</div><div class="arrow"></div></div>
+      <div class="stage"><div class="sn">03</div><div class="st">Build</div><div class="sg">Compile · Unit Test</div><div class="arrow"></div></div>
+      <div class="stage sec"><div class="sn">04</div><div class="st">Image Scan</div><div class="sg">Trivy · SBOM</div><div class="arrow"></div></div>
+      <div class="stage sec"><div class="sn">05</div><div class="st">Sign</div><div class="sg">Cosign · Provenance</div><div class="arrow"></div></div>
+      <div class="stage"><div class="sn">06</div><div class="st">Publish</div><div class="sg">Registry · ECR/GAR</div><div class="arrow"></div></div>
+      <div class="stage sec"><div class="sn">07</div><div class="st">Deploy</div><div class="sg">GitOps · Admission</div><div class="arrow"></div></div>
+      <div class="stage sec"><div class="sn">08</div><div class="st">DAST</div><div class="sg">ZAP · Verify</div><div class="arrow"></div></div>
+      <div class="stage"><div class="sn">09</div><div class="st">Operate</div><div class="sg">Monitor · Notify</div></div>
+    </div>
+
+    <h3>Dataflow — What Moves Between Stages</h3>
+    <div class="grid g2">
+      <div class="card">
+        <h5>Artifact Flow</h5>
+        <p>Source → container image → signed image + SBOM → registry-stored artifact → running workload. The
+          <strong>same immutable image digest</strong> is promoted across every environment.</p>
+      </div>
+      <div class="card t-amber">
+        <h5>Security Evidence Flow</h5>
+        <p>Each gate emits machine-readable findings (SARIF, JSON), test reports, SBOMs, and signatures. This
+          evidence trail feeds dashboards, the security tab, and compliance audits.</p>
+      </div>
+      <div class="card t-teal">
+        <h5>Configuration Flow</h5>
+        <p>Environment config and image tags live in a Git config repo, decoupled from app code. Secrets are
+          referenced, never embedded — resolved from a vault at deploy time.</p>
+      </div>
+      <div class="card t-violet">
+        <h5>Feedback Flow</h5>
+        <p>Status, scan results, and deployment outcomes flow back to developers via PR checks, ChatOps
+          (Slack/Teams), and observability — closing the loop to the Plan phase.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="ct">Trust Boundary</span>
+      <p>The registry is the pivot point of the dataflow. Everything <em>before</em> it is "build &amp; verify";
+        everything <em>after</em> it is "deploy &amp; observe". Signing at the boundary and verifying on the far
+        side is what makes the supply chain tamper-evident.</p>
+    </div>
+  </section>
+
+  <!-- ============ 7 ============ -->
+  <section id="s7">
+    <div class="kicker">Infrastructure</div>
+    <h2><span class="num">7</span>Infrastructure Architecture</h2>
+    <p class="lead">Modern application infrastructure is cloud-native, declarative, and container-orchestrated —
+      defined entirely as code and reproducible across environments and clouds.</p>
+
+    <h3>Layered Reference Architecture</h3>
+    <div class="arch">
+      <div class="arch-layer">
+        <div class="arch-tag">Edge</div>
+        <div class="arch-box acc-c"><div class="abt">DNS / CDN</div><div class="abd">Route 53 · Cloud CDN</div></div>
+        <div class="arch-box acc-c"><div class="abt">WAF</div><div class="abd">L7 filtering · DDoS</div></div>
+        <div class="arch-box acc-c"><div class="abt">Load Balancer</div><div class="abd">ALB / Ingress · TLS</div></div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-tag">Net</div>
+        <div class="arch-box acc-v"><div class="abt">VPC / VNet</div><div class="abd">Isolated network</div></div>
+        <div class="arch-box acc-v"><div class="abt">Public Subnets</div><div class="abd">LB · Bastion · NAT</div></div>
+        <div class="arch-box acc-v"><div class="abt">Private Subnets</div><div class="abd">Workloads · Data</div></div>
+        <div class="arch-box acc-v"><div class="abt">Network Policy</div><div class="abd">Calico · micro-seg</div></div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-tag">Compute</div>
+        <div class="arch-box acc-t"><div class="abt">K8s Control Plane</div><div class="abd">EKS · AKS · GKE</div></div>
+        <div class="arch-box acc-t"><div class="abt">Worker Nodes</div><div class="abd">Autoscaling pools</div></div>
+        <div class="arch-box acc-t"><div class="abt">Pods / Containers</div><div class="abd">App workloads</div></div>
+        <div class="arch-box acc-t"><div class="abt">Service Mesh</div><div class="abd">mTLS · traffic mgmt</div></div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-tag">Data</div>
+        <div class="arch-box acc-a"><div class="abt">Managed DB</div><div class="abd">RDS · Cloud SQL</div></div>
+        <div class="arch-box acc-a"><div class="abt">Object Store</div><div class="abd">S3 · GCS · Blob</div></div>
+        <div class="arch-box acc-a"><div class="abt">Secrets / Vault</div><div class="abd">KMS · Secrets Mgr</div></div>
+        <div class="arch-box acc-a"><div class="abt">Persistent Vols</div><div class="abd">CSI storage</div></div>
+      </div>
+      <div class="arch-layer">
+        <div class="arch-tag">Ops</div>
+        <div class="arch-box acc-c"><div class="abt">Observability</div><div class="abd">Prometheus · Grafana</div></div>
+        <div class="arch-box acc-c"><div class="abt">Logging</div><div class="abd">Loki · ELK · Cloud</div></div>
+        <div class="arch-box acc-c"><div class="abt">IaC State</div><div class="abd">Terraform backend</div></div>
+        <div class="arch-box acc-c"><div class="abt">GitOps Agent</div><div class="abd">Argo CD · Flux</div></div>
+      </div>
+    </div>
+
+    <h3>Architectural Pillars</h3>
+    <div class="grid g3">
+      <div class="card"><span class="ic">📜</span><h5>Infrastructure as Code</h5><p>Terraform / Pulumi define every resource declaratively — versioned, peer-reviewed, scanned, and reproducible. No click-ops.</p></div>
+      <div class="card t-teal"><span class="ic">☸️</span><h5>Container Orchestration</h5><p>Kubernetes schedules, heals, and scales workloads. Operators extend it for stateful services (DBs, queues, monitoring).</p></div>
+      <div class="card t-violet"><span class="ic">🧊</span><h5>Immutable Infrastructure</h5><p>Servers are never patched in place — they are rebuilt from images. Eliminates configuration drift and snowflake servers.</p></div>
+      <div class="card t-amber"><span class="ic">🌐</span><h5>Multi-Cloud Portability</h5><p>Containerized workloads + Terraform modules abstract the cloud, enabling consistent deploys to AWS, Azure, and GCP.</p></div>
+      <div class="card"><span class="ic">📈</span><h5>Elastic Autoscaling</h5><p>Cluster autoscaler and HPA match capacity to demand — cost-efficient and resilient under load spikes.</p></div>
+      <div class="card t-teal"><span class="ic">🔒</span><h5>Zero-Trust Networking</h5><p>Private subnets, network policies, mTLS, and least-privilege IAM — every connection is authenticated and authorized.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ 8 ============ -->
+  <section id="s8">
+    <div class="kicker">Hands-On Assessment</div>
+    <h2><span class="num">8</span>Repository Review — <code>skondla/flaskAPIWebApp</code></h2>
+    <p class="lead">A real-world, multi-cloud DevSecOps reference project: a Python Flask web app and REST API for
+      AWS RDS database operations, with CI/CD pipelines and Infrastructure-as-Code for three cloud providers.</p>
+
+    <h3>What the Project Is</h3>
+    <p>The application is a <strong>database self-service tool</strong>. Through an HTML web interface or
+      <code>curl</code> commands against REST endpoints, authenticated users can restore an AWS RDS database from a
+      snapshot, check the status of a restore, and attach an instance to an existing DB cluster. It is built with
+      <strong>Flask</strong> using blueprints and route-based API endpoints, <strong>Flask-Login</strong> for
+      authentication, a <strong>PostgreSQL</strong> backend for user storage, and <strong>boto3</strong> for AWS
+      RDS automation. The app ships in two separately containerized variants — an <em>ADMIN</em> console and a
+      <em>USER</em> interface — exposed on distinct ports.</p>
+
+    <h4 class="mini">Repository Composition</h4>
+    <div class="langbar">
+      <span style="width:37.2%;background:#22D3EE"></span>
+      <span style="width:31.7%;background:#A78BFA"></span>
+      <span style="width:16.4%;background:#34D399"></span>
+      <span style="width:7.9%;background:#FBBF24"></span>
+      <span style="width:5.3%;background:#F472B6"></span>
+      <span style="width:1.5%;background:#64748B"></span>
+    </div>
+    <div class="langkey">
+      <span><i style="background:#22D3EE"></i>Shell 37.2%</span>
+      <span><i style="background:#A78BFA"></i>HCL / Terraform 31.7%</span>
+      <span><i style="background:#34D399"></i>Python 16.4%</span>
+      <span><i style="background:#FBBF24"></i>HTML 7.9%</span>
+      <span><i style="background:#F472B6"></i>Go (Terratest) 5.3%</span>
+      <span><i style="background:#64748B"></i>Dockerfile / Other 1.5%</span>
+    </div>
+
+    <h3>Where It Fits — DevSecOps</h3>
+    <p>The repo implements a recognizable DevSecOps pipeline using <strong>GitHub Actions</strong>. Four workflows
+      target AWS EKS and GCP GKE (admin + user variants each), triggered on <code>push</code> to <code>main</code>
+      and cloud-specific testing branches. The orchestrated job graph is:</p>
+
+    <div class="flow">
+      <div class="stage"><div class="sn">01</div><div class="st">Checkout</div><div class="sg">Source</div><div class="arrow"></div></div>
+      <div class="stage"><div class="sn">02</div><div class="st">Test</div><div class="sg">Placeholder</div><div class="arrow"></div></div>
+      <div class="stage"><div class="sn">03</div><div class="st">Build</div><div class="sg">Docker image</div><div class="arrow"></div></div>
+      <div class="stage sec"><div class="sn">04</div><div class="st">Scan</div><div class="sg">Aqua Trivy</div><div class="arrow"></div></div>
+      <div class="stage"><div class="sn">05</div><div class="st">Deploy</div><div class="sg">kubectl apply</div><div class="arrow"></div></div>
+      <div class="stage"><div class="sn">06</div><div class="st">Verify</div><div class="sg">curl endpoints</div><div class="arrow"></div></div>
+      <div class="stage"><div class="sn">07</div><div class="st">Notify</div><div class="sg">Slack</div></div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card t-teal">
+        <h5>✓ DevSecOps Practices Present</h5>
+        <p>• Pipeline-as-code with staged job dependencies (<code>needs:</code>)<br>
+           • Container image vulnerability scanning with <strong>Aqua Trivy</strong> (CRITICAL/HIGH, OS + library)<br>
+           • A separate Trivy <em>filesystem</em> scan action with SARIF output to the GitHub Security tab<br>
+           • Secrets externalized to <strong>GitHub Secrets</strong> (cloud keys, kubeconfig, Slack hook)<br>
+           • Non-root container user created and enforced in the Dockerfile<br>
+           • Post-deploy smoke verification of REST endpoints<br>
+           • ChatOps feedback to Slack on success/failure<br>
+           • Multi-cloud GitOps intent — an <strong>Argo CD</strong> (Argo Workflows) Helm setup is included</p>
+      </div>
+      <div class="card t-amber">
+        <h5>△ DevSecOps Gaps Observed</h5>
+        <p>• Trivy's blocking <code>exit-code: '1'</code> is <strong>commented out</strong> — the scan is
+           informational only and never fails the pipeline<br>
+           • The DAST stage (<strong>OWASP ZAP</strong>) is fully commented out<br>
+           • The <code>Test</code> job is a placeholder — "Testing Application, Not complete yet"; no SAST<br>
+           • Deployment is <strong>push-based</strong> (<code>kubectl apply</code> from the runner) despite Argo CD being present<br>
+           • AWS auth uses long-lived static access keys, not OIDC federation<br>
+           • <code>mask-aws-account-id: no</code> exposes the account ID in logs<br>
+           • No artifact signing, SBOM, or provenance attestation<br>
+           • TLS certs are self-signed and generated inside the Dockerfile</p>
+      </div>
+    </div>
+
+    <h3>Where It Fits — Infrastructure Architecture</h3>
+    <p>The repository is notably strong on Infrastructure-as-Code — HCL (Terraform) is its second-largest language.
+      It demonstrates a genuine <strong>multi-cloud, Kubernetes-centric</strong> architecture:</p>
+    <div class="grid g3">
+      <div class="card"><span class="tag">AWS</span><h5>EKS + ECS</h5><p>Terraform builds a full VPC, subnets, routes, IAM OIDC, EKS cluster, managed node groups, and the cluster autoscaler. An ECS/Fargate deployment path is also included.</p></div>
+      <div class="card t-violet"><span class="tag">GCP</span><h5>GKE</h5><p>Modular Terraform (<code>gke-cluster</code>, <code>gke-service-account</code> modules) for public &amp; private clusters, with Go <strong>Terratest</strong> validation.</p></div>
+      <div class="card t-teal"><span class="tag">Azure</span><h5>AKS</h5><p>Terraform for an AKS cluster plus an NGINX ingress controller setup and service-principal scripting.</p></div>
+      <div class="card t-amber"><span class="tag">Data</span><h5>PostgreSQL on K8s</h5><p>Manifests for stateful PostgreSQL — CSI storage classes, PVCs, secrets, services, and Calico network policies.</p></div>
+      <div class="card"><span class="tag">Platform</span><h5>K8s Operators</h5><p>Operator install scripts for <strong>Prometheus</strong>, <strong>Grafana</strong>, and <strong>RabbitMQ</strong> — observability and messaging.</p></div>
+      <div class="card t-violet"><span class="tag">GitOps</span><h5>Argo CD / Helm</h5><p>An Argo Workflows Helm installation — the foundation for a pull-based delivery model.</p></div>
+    </div>
+
+    <div class="callout">
+      <span class="ct">Overall Positioning</span>
+      <p>This is a solid <strong>intermediate-level DevSecOps reference project</strong>. It correctly demonstrates
+        the <em>shape</em> of a secure, multi-cloud, container-native pipeline — staged orchestration, image
+        scanning, IaC, GitOps building blocks — and is well suited as a learning artifact. To reach a
+        production-grade posture it needs its security gates made <em>enforcing</em> rather than informational,
+        and its delivery model shifted from push to pull.</p>
+    </div>
+  </section>
+
+  <!-- ============ 9 ============ -->
+  <section id="s9">
+    <div class="kicker">Assessment</div>
+    <h2><span class="num">9</span>DevSecOps Maturity Scorecard</h2>
+    <p class="lead">The <code>flaskAPIWebApp</code> repository scored against ten DevSecOps capability domains.
+      Scores reflect what is implemented and enforced in the current <code>main</code> branch.</p>
+
+    <div class="score">
+      <div class="score-row"><div class="lbl">Pipeline as Code</div>
+        <div class="bar"><span class="fill-g" style="width:88%"></span></div><div class="val">Strong</div></div>
+      <div class="score-row"><div class="lbl">Build &amp; Containerization</div>
+        <div class="bar"><span class="fill-g" style="width:82%"></span></div><div class="val">Strong</div></div>
+      <div class="score-row"><div class="lbl">Infrastructure as Code</div>
+        <div class="bar"><span class="fill-g" style="width:85%"></span></div><div class="val">Strong</div></div>
+      <div class="score-row"><div class="lbl">Multi-Cloud Architecture</div>
+        <div class="bar"><span class="fill-g" style="width:80%"></span></div><div class="val">Strong</div></div>
+      <div class="score-row"><div class="lbl">Container Image Scanning</div>
+        <div class="bar"><span class="fill-a" style="width:55%"></span></div><div class="val">Partial</div></div>
+      <div class="score-row"><div class="lbl">Secrets Management</div>
+        <div class="bar"><span class="fill-a" style="width:50%"></span></div><div class="val">Partial</div></div>
+      <div class="score-row"><div class="lbl">Automated Testing / SAST</div>
+        <div class="bar"><span class="fill-r" style="width:18%"></span></div><div class="val">Weak</div></div>
+      <div class="score-row"><div class="lbl">DAST / Runtime Security</div>
+        <div class="bar"><span class="fill-r" style="width:15%"></span></div><div class="val">Weak</div></div>
+      <div class="score-row"><div class="lbl">Supply-Chain Integrity</div>
+        <div class="bar"><span class="fill-r" style="width:12%"></span></div><div class="val">Weak</div></div>
+      <div class="score-row"><div class="lbl">GitOps / Pull Delivery</div>
+        <div class="bar"><span class="fill-a" style="width:40%"></span></div><div class="val">Partial</div></div>
+    </div>
+
+    <div class="grid g3" style="margin-top:24px;">
+      <div class="card t-teal"><span class="ic">🟢</span><h5>Strengths</h5><p>Pipeline orchestration, containerization, and Infrastructure-as-Code across three clouds are well executed and genuinely production-shaped.</p></div>
+      <div class="card t-amber"><span class="ic">🟡</span><h5>Partial</h5><p>Security scanning and GitOps foundations exist but are non-enforcing or not yet wired into the delivery flow.</p></div>
+      <div class="card t-violet"><span class="ic">🔴</span><h5>Priority Gaps</h5><p>Testing/SAST, DAST, and supply-chain integrity (signing, SBOM, provenance) are the highest-leverage areas to address.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ 10 ============ -->
+  <section id="s10">
+    <div class="kicker">Action Plan</div>
+    <h2><span class="num">10</span>Gaps, Recommendations &amp; Roadmap</h2>
+    <p class="lead">A prioritized path to lift <code>flaskAPIWebApp</code> from an intermediate reference project to
+      a production-grade DevSecOps posture.</p>
+
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Priority</th><th>Recommendation</th><th>Why It Matters</th></tr></thead>
+        <tbody>
+          <tr><td><span class="pill r">P1</span></td><td><b>Enforce the Trivy gate</b> — uncomment <code>exit-code: '1'</code></td><td>Converts security theater into a real quality gate; vulnerable images stop shipping</td></tr>
+          <tr><td><span class="pill r">P1</span></td><td><b>Adopt OIDC federation</b> for AWS &amp; GCP auth</td><td>Eliminates long-lived static cloud keys — the largest credential risk</td></tr>
+          <tr><td><span class="pill r">P1</span></td><td><b>Add SAST</b> — CodeQL or Semgrep + Bandit for Python</td><td>Catches code-level vulnerabilities (injection, auth flaws) at PR time</td></tr>
+          <tr><td><span class="pill a">P2</span></td><td><b>Implement real tests</b> in the placeholder <code>Test</code> job</td><td>A pipeline without tests cannot safely gate or deploy</td></tr>
+          <tr><td><span class="pill a">P2</span></td><td><b>Re-enable DAST</b> — wire the OWASP ZAP stage post-deploy</td><td>Detects exploitable runtime issues a static scan cannot see</td></tr>
+          <tr><td><span class="pill a">P2</span></td><td><b>Shift to pull-based GitOps</b> — let Argo CD own deployment</td><td>Removes cluster credentials from CI; adds drift detection &amp; audited rollback</td></tr>
+          <tr><td><span class="pill b">P3</span></td><td><b>Generate SBOM + sign images</b> with Syft &amp; Cosign</td><td>Establishes supply-chain provenance and tamper evidence (SLSA)</td></tr>
+          <tr><td><span class="pill b">P3</span></td><td><b>Scan IaC</b> — add Checkov/tfsec on the Terraform</td><td>Catches infrastructure misconfigurations before <code>apply</code></td></tr>
+          <tr><td><span class="pill b">P3</span></td><td><b>Add admission control</b> — Kyverno/OPA in-cluster</td><td>Blocks privileged or non-compliant workloads at deploy time</td></tr>
+          <tr><td><span class="pill b">P3</span></td><td><b>Use a managed vault</b> &amp; CA-issued TLS certs</td><td>Replaces self-signed Dockerfile certs and tightens secret handling</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Target Reference Architecture</h3>
+    <p>The recommended end state — a hybrid pipeline where CI builds and verifies, and GitOps delivers:</p>
+    <div class="flow">
+      <div class="stage"><div class="sn">CI</div><div class="st">Commit</div><div class="sg">PR + reviews</div><div class="arrow"></div></div>
+      <div class="stage sec"><div class="sn">CI</div><div class="st">SAST + SCA</div><div class="sg">CodeQL · Trivy</div><div class="arrow"></div></div>
+      <div class="stage"><div class="sn">CI</div><div class="st">Build + Test</div><div class="sg">Image · pytest</div><div class="arrow"></div></div>
+      <div class="stage sec"><div class="sn">CI</div><div class="st">Scan + Sign</div><div class="sg">SBOM · Cosign</div><div class="arrow"></div></div>
+      <div class="stage"><div class="sn">CI</div><div class="st">Push + Bump</div><div class="sg">Registry · Git tag</div><div class="arrow"></div></div>
+      <div class="stage sec"><div class="sn">CD</div><div class="st">Argo CD Sync</div><div class="sg">Pull · Admission</div><div class="arrow"></div></div>
+      <div class="stage sec"><div class="sn">CD</div><div class="st">DAST</div><div class="sg">ZAP verify</div><div class="arrow"></div></div>
+      <div class="stage"><div class="sn">OP</div><div class="st">Observe</div><div class="sg">Prom · Grafana</div></div>
+    </div>
+
+    <div class="callout good">
+      <span class="ct">Closing Assessment</span>
+      <p><code>skondla/flaskAPIWebApp</code> is a well-structured, multi-cloud DevSecOps reference that already
+        embodies the right architectural <em>shape</em>: pipeline-as-code, container scanning, three-cloud
+        Infrastructure-as-Code, Kubernetes operators, and GitOps building blocks. Its path to production maturity
+        is clear and incremental — make the existing security gates <strong>enforcing</strong>, add the
+        <strong>missing test and DAST stages</strong>, secure the supply chain with <strong>signing and
+        provenance</strong>, and complete the shift from <strong>push to pull-based delivery</strong>.</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <p><span class="fl">DevSecOps · Pipeline Automation · Infrastructure Architecture</span></p>
+  <p>Technical reference &amp; repository assessment of <code>github.com/skondla/flaskAPIWebApp</code></p>
+</footer>
+
+</body>
+</html>
